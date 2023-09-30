@@ -1,6 +1,6 @@
 #!/bin/bash
-export $(xargs < /services/diginext/diginext-new-backend/.env)
-set -e
+# export $(xargs < /services/diginext/diginext-new-backend/.env)
+# set -e
 # docker exec -i diginext-new-db mysqldump --no-tablespaces -u${DB_USERNAME} -p${DB_PASSWORD} ${DB_DATABASE} > /ssd/diginext-new_backups/db-`date +"%Y-%m-%d_%H-%M"`.sql
 git submodule update
 docker-compose build
