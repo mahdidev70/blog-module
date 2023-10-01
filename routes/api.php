@@ -5,6 +5,7 @@ use TechStudio\Core\app\Http\Controllers\CategoriesController;
 use TechStudio\Core\app\Http\Controllers\TagController;
 use Illuminate\Support\Facades\Route;
 
+
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -41,19 +42,18 @@ Route::prefix('articles')->group(function () {
         // Route::post('/articles/inline_media', [ArticleController::class, 'uploadArticleContent']);
         
         // ---- category side: ----
-        Route::post('/categories/create', [CategoriesController::class, 'createCategory']);
+        // Route::post('/categories/create', [CategoriesController::class, 'createCategory']);
         Route::get('/category/common', [CategoriesController::class, 'getCommonListCategory']);
         Route::get('/categories/list', [CategoriesController::class, 'listCategory']);
         Route::put('/categories/update', [CategoriesController::class, 'updateCategory']);
         Route::put('/categories/set_status', [CategoriesController::class, 'updateCategoryStatus']);
     
         // ---- tag side: ----
-        // Route::post('/tags/create', 'App\Http\Controllers\TagController@createTags');
-        // Route::get('/tag/common', 'App\Http\Controllers\TagController@getCommonListTag');
-        // Route::get('/tags/list', 'App\Http\Controllers\TagController@listTags');
-        // Route::put('/tags/update', 'App\Http\Controllers\TagController@updateTags');
-        // Route::put('/tags/set_status', 'App\Http\Controllers\TagController@updateTagsStatus');
-        // Route::get('/tag/list/search', 'App\Http\Controllers\TagController@tagSearch');
+        // Route::post('/tags/create', [TagController::class, 'createTags']);
+        Route::get('/tag/common', [TagController::class, 'getCommonListTag']);
+        // Route::get('/tags/list', [TagController::class, 'listTags']);
+        // Route::put('/tags/update', [TagController::class, 'updateTags']);
+        Route::put('/tags/set_status', [TagController::class, 'updateTagsStatus']);
     
         // ----comment side: ----
         // Route::get('/articles/comments/data', 'App\Http\Controllers\CommentController@getArticleCommentsListData');
