@@ -5,6 +5,8 @@ use TechStudio\Core\app\Http\Controllers\CategoriesController;
 use TechStudio\Core\app\Http\Controllers\TagController;
 use TechStudio\Core\app\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
 
 
 /*
@@ -21,24 +23,34 @@ use Illuminate\Support\Facades\Route;
 // ============ CLIENT SIDE ===============
 Route::prefix('articles')->group(function () {
 
-    Route::get('/archive/common', [ArticleController::class, 'articlesArchiveCommon']);
-    Route::get('/archive/list', [ArticleController::class, 'listArticles']);
+    // Route::get('/archive/common', [ArticleController::class, 'articlesArchiveCommon']);
+    // Route::get('/archive/list', [ArticleController::class, 'listArticles']);
+    // Route::get('/section/common', [ArticleController::class, 'articlesSectionCommon']);
+    // Route::get('/section/list', [ArticleController::class, 'articlesSectionList']);
+    // Route::get('/category/{slug}/common', [ArticleController::class, 'articlesByCategoryCommon']);
+    
+});
+
+Route::middleware('login_optional')->prefix('article')->group(function() {
+
+    // Route::get('/{slug}', [ArticleController::class, 'getArticle']);
+    // Route::get('/{slug}/comments', [CommentController::class, 'getComments']);
 
 });
 
-// ============= PANEL SIDE ===============
-// Route::middleware('login_required')->group(function () {
-
+Route::middleware('login_required')->group(function () {
+    
+    // ============= PANEL SIDE ===============
     // Route::get('/article_editor/common', [ArticleController::class, 'getEditorCommon']);
     // Route::get('/article_editor/data/{id}', [ArticleController::class, 'getEditorData']);
     // Route::put('/article_editor/data/', [ArticleController::class, 'updateEditorData']);
+
+    Route::prefix('panel')->group(function () {
     
-    // Route::prefix('panel')->group(function () {
-    
-        // Route::get('/articles/data', [ArticleController::class, 'getArticleListData']);
+        // ---- article ----
+        // Route::get('/data', [ArticleController::class, 'getArticleListData']);
         // Route::get('/articles/common', [ArticleController::class, 'getArticleListCommon']);
         // Route::put('/articles/set_status', [ArticleController::class, 'updateArticlesStatus']);
-    
         // Route::post('/articles/upload_cover', [ArticleController::class, 'uploadArticleCover']);
         // Route::post('/articles/inline_media', [ArticleController::class, 'uploadArticleContent']);
         
@@ -62,8 +74,8 @@ Route::prefix('articles')->group(function () {
         // Route::put('/articles/comments/update', [CommentController::class, 'updateArticleCommentsStatus']);
         // Route::put('/articles/comments/{comment_id}',[CommentController::class, 'editArticleCommentText']);
     
-    // });
-// });
+    });
+});
 
 
 
