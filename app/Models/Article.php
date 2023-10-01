@@ -2,12 +2,17 @@
 
 namespace TechStudio\Blog\app\Models;
 
+use TechStudio\Core\app\Models\Category;
+use TechStudio\Core\app\Models\Comment;
+use TechStudio\Core\app\Models\Traits\taggeable;
+
+
 use Exception;
 use App\Helper\HtmlContent;
 use App\Helper\PageContent;
 use Laravel\Scout\Searchable;
 use App\Models\Traits\Likeable;
-use App\Models\Traits\taggeable;
+// use App\Models\Traits\taggeable;
 use App\Models\Traits\Bookmarkable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +23,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Article extends Model
 {
-    // use HasFactory, taggeable, Likeable, Bookmarkable;
+    use HasFactory, taggeable;
+    // Likeable, Bookmarkable;
 
     protected $table = 'blog_articles';
 
@@ -54,17 +60,17 @@ class Article extends Model
     // {
     //     return $this->belongsTo(UserProfile::class);
     // }
-    // public function category()
-    // {
-    //     return $this->belongsTo(Category::class, 'category_id')
-    //         ->where('table_type', get_class($this))->select(['id', 'slug', 'title']);
-    // }
+    public function category()
+    {
+        return $this->belongsTo(Category::class, 'category_id')
+            ->where('table_type', get_class($this))->select(['id', 'slug', 'title']);
+    }
 
-    // public function comments(): MorphMany
-    // {
-    //     return $this->morphMany(Comment::class, 'commentable')
-    //         ->whereNull('parent_id')->where('status', 'approved');
-    // }
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable')
+            ->whereNull('parent_id')->where('status', 'approved');
+    }
 
     // public function getSummary()
     // {
