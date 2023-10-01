@@ -9,6 +9,9 @@ use TechStudio\Core\app\Models\Category;
 use TechStudio\Core\app\Models\Tag;
 use TechStudio\Blog\app\Models\Article;
 use TechStudio\Blog\app\Services\Article\ArticleService;
+use TechStudio\Core\app\Services\Category\CategoryService;
+
+use TechStudio\Core\app\Models\Alias;
 
 
 
@@ -31,12 +34,13 @@ use TechStudio\Blog\app\Services\Article\ArticleService;
 // use App\Helper\ArrayPaginate;
 // use Illuminate\Support\Facades\Auth;
 // use Symfony\Component\HttpFoundation\Exception\BadRequestException;
-// use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Validator;
+
 // use App\Helper\HtmlContent;
 
 class ArticleController extends Controller
 {
-    public function __construct(protected ArticleService $articleService)
+    public function __construct(protected ArticleService $articleService,  protected CategoryService $categoryService)
     { }
 
     // private function authors()
@@ -67,20 +71,20 @@ class ArticleController extends Controller
     //     return $this->articleService->getArticle($slug);
     // }
 
-    public function listArticles(Request $request)
-    {
-        // return $this->articleService->getArticles(request:$request);
-    }
+    // public function listArticles(Request $request)
+    // {
+    //     return $this->articleService->getArticles(request:$request);
+    // }
 
-    public function articlesArchiveCommon()
-    {
-        // return [
-        //     'pinnedArticles' => $this->articleService->pinnedArticles() , //DEPRECATED
-            //ToDo CORE :
+    // public function articlesArchiveCommon()
+    // {
+    //     return [
+            // 'pinnedArticles' => $this->articleService->pinnedArticles() , //DEPRECATED
+            // ToDo CORE :
             // 'categories' => $this->categoryService->getCategoriesForFilter(new Article()),  
         // ];
 
-    }
+    // }
 
     // public function articlesSectionCommon()
     // {
@@ -136,50 +140,50 @@ class ArticleController extends Controller
     //     ];
     // }
 
-    public function getEditorCommon(Request $request)
-    {
-        $categories = Category::where('table_type','App\Models\Article')->get()->map(function ($category) {
-            return [
-                'title' => $category->title,
-                'slug' => $category->slug,
-            ];
-        });
+    // public function getEditorCommon(Request $request)
+    // {
+    //     $categories = Category::where('table_type','App\Models\Article')->get()->map(function ($category) {
+    //         return [
+    //             'title' => $category->title,
+    //             'slug' => $category->slug,
+    //         ];
+    //     });
 
-        $tags = Tag::all()->map(function ($tag) {
-            return [
-                'title' => $tag->title,
-                'slug' => $tag->slug,
-            ];
-        });
+    //     $tags = Tag::all()->map(function ($tag) {
+    //         return [
+    //             'title' => $tag->title,
+    //             'slug' => $tag->slug,
+    //         ];
+    //     });
 
-        return [
-            'categories' => $categories,
-            'tags' => $tags,
-            //ToDo Core
-            // 'authorOptions' => $this->authors(),
-        ];
-    }
+    //     return [
+    //         'categories' => $categories,
+    //         'tags' => $tags,
+    //         //ToDo Core
+    //         // 'authorOptions' => $this->authors(),
+    //     ];
+    // }
 
     // public function getEditorData($id)
     // {
-        // $article = Article::with('tags', 'author')->where('id', $id)->firstOrFail();
+    //     $article = Article::with('tags', 'author')->where('id', $id)->firstOrFail();
 
-        // if ($article->author_type == 'App\\Models\\Alias') {
-        //     $article->author_type = 'alias';
-        // }elseif ($article->author_type == 'App\\Models\\UserProfile') {
-        //     $article->author_type = 'user';
-        // }
+    //     if ($article->author_type == 'App\\Models\\Alias') {
+    //         $article->author_type = 'alias';
+    //     }elseif ($article->author_type == 'App\\Models\\UserProfile') {
+    //         $article->author_type = 'user';
+    //     }
 
-        // $content = $article->content;
-        // for ($i = 0; $i < count($content); $i++) {
-        //     $block = $content[$i];
-        //     if ($block['type'] == 'html' && is_string($block['content'])) {
-        //         // legacy html block. upgrade it:
-        //         $replacementBlocks = HtmlContent::htmlToBlocks($block['content']);
-        //         array_splice($content, $i, 1);
-        //         array_splice($content, $i, 0, $replacementBlocks);
-        //     }
-        // }
+    //     $content = $article->content;
+    //     for ($i = 0; $i < count($content); $i++) {
+    //         $block = $content[$i];
+    //         if ($block['type'] == 'html' && is_string($block['content'])) {
+    //             // legacy html block. upgrade it:
+    //             $replacementBlocks = HtmlContent::htmlToBlocks($block['content']);
+    //             array_splice($content, $i, 1);
+    //             array_splice($content, $i, 0, $replacementBlocks);
+    //         }
+    //     }
 
     //      return [
     //             'id' => $article->id,
