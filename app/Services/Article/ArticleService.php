@@ -9,7 +9,7 @@ use App\Models\Section;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\ConnectionException;
-
+use TechStudio\Core\app\Models\Category;
 
 // TODO: Needs cleanup/refactor
 
@@ -218,9 +218,11 @@ class ArticleService
 
     public function getFirstArticleByCategory($category)
     {
+        $category = Category::where('slug', $category)->whereNull('deleted_at')->firstOrFail();
+
         $categoryTitle = $category->title;
         $article = Article::where('category_id',$category->id)->latest('id')->first();
-        // $article->summary = $article->getSummary();  // error
+        $article->summary = $article->getSummary();  // error
         $category= [
             'title' => 'دسته بندی نشده',
             'slug' => null,
@@ -232,10 +234,10 @@ class ArticleService
                 'slug' =>  $article->category->slug,
             ];
         }
-        // $tags = $article->tags->map(fn ($tag) => [
-        //     'slug' => $tag?->slug,
-        //     'title' => $tag?->title,
-        // ]);
+        $tags = $article->tags->map(fn ($tag) => [
+            'slug' => $tag?->slug,
+            'title' => $tag?->title,
+        ]);
 
             return [
                 'title' => $categoryTitle ,
@@ -252,10 +254,11 @@ class ArticleService
                     "id" => 48,
                 ],  // TODO: replace with user display name
                 'category' => $category,
-                // 'tags' => $tags,
+                'tags' => $tags,
                 "minutesToRead" => $article->minutesToRead(),
             ],
             ];
+
 
     }
 }

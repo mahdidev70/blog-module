@@ -35,7 +35,7 @@ Route::prefix('articles')->group(function () {
     Route::get('/archive/common', [ArticleController::class, 'articlesArchiveCommon']);
     Route::get('/archive/list', [ArticleController::class, 'listArticles']);
     Route::get('/section/common', [ArticleController::class, 'articlesSectionCommon']);
-    // Route::get('/category/{slug}/common', [ArticleController::class, 'articlesByCategoryCommon']);
+    Route::get('/category/{slug}/common', [ArticleController::class, 'articlesByCategoryCommon']);
     
 });
 
@@ -49,8 +49,8 @@ Route::prefix('home')->group(function() {
 
 Route::middleware('login_optional')->prefix('article')->group(function() {
 
-    Route::get('/{slug}', [ArticleController::class, 'getArticle']);
-    Route::get('/{slug}/comments', [CommentController::class, 'getComments']);
+    // Route::get('/{slug}', [ArticleController::class, 'getArticle']);
+    // Route::get('/{slug}/comments', [CommentController::class, 'getComments']);
 
 });
 
