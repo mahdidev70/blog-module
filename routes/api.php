@@ -22,12 +22,6 @@ use Illuminate\Support\Facades\Config;
 */
 
 
-if (Config::get('flags.community')) {
-    // Route::post('/article/{slug}/bookmark', 'App\Http\Controllers\ArticleController@storeBookmark')->middleware('login_required');
-    // Route::post('/article/{slug}/feedback', 'App\Http\Controllers\ArticleController@storeFeedback')->middleware('login_required');
-    // Route::post('/article/{slug}/comments', 'App\Http\Controllers\CommentController@store')->middleware('login_required');
-    // Route::post('/article/{slug}/comments/{id}/feedback', 'App\Http\Controllers\CommentController@storeFeedback')->middleware('login_required');
-}
 
 // ============ CLIENT SIDE ===============
 Route::prefix('articles')->group(function () {
@@ -39,22 +33,35 @@ Route::prefix('articles')->group(function () {
     
 });
 
-Route::prefix('home')->group(function() {
+Route::prefix('{locale?}/api/home')->group(function() {
     
     Route::get('/common', [BlogHomeController::class, 'getHomeCommon']);
     Route::get('/data', [BlogHomeController::class, 'getHomeData']);
-
+    
 });
 
 
 Route::middleware('login_optional')->prefix('article')->group(function() {
-
-    // Route::get('/{slug}', [ArticleController::class, 'getArticle']);
+    
     // Route::get('/{slug}/comments', [CommentController::class, 'getComments']);
-
+    // Route::get('/{slug}', [ArticleController::class, 'getArticle']);
+    
 });
 
 Route::middleware('login_required')->group(function () {
+    
+    // if (Config::get('flags.community')) {
+    //         Route::post('article/{slug}/bookmark', [ArticleController::class, 'storeBookmark']);
+    //         Route::post('article/{slug}/feedback', [ArticleController::class, 'storeFeedback']);
+    //         Route::post('/comments', [CommentController::class, 'store']);
+    //         Route::post('/comments/{id}/feedback', [CommentController::class, 'storeFeedback']);
+    // };
+    
+    
+    // Route::prefix('article/{slug}')->group(function() {
+        
+    // });
+    
     
     // ============= PANEL SIDE ===============
     // Route::get('/article_editor/common', [ArticleController::class, 'getEditorCommon']);
