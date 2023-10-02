@@ -5,10 +5,10 @@ namespace TechStudio\Blog\app\Models;
 use TechStudio\Core\app\Models\Category;
 use TechStudio\Core\app\Models\Comment;
 use TechStudio\Core\app\Models\Traits\taggeable;
+use TechStudio\Core\app\Helper\PageContent;
 
 use Exception;
 use App\Helper\HtmlContent;
-use App\Helper\PageContent;
 use Laravel\Scout\Searchable;
 use App\Models\Traits\Likeable;
 use App\Models\Traits\Bookmarkable;
