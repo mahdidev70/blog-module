@@ -1,6 +1,7 @@
 <?php
 
 use TechStudio\Blog\app\Http\Controllers\ArticleController;
+use TechStudio\Blog\app\Http\Controllers\BlogHomeController;
 use TechStudio\Core\app\Http\Controllers\CategoriesController;
 use TechStudio\Core\app\Http\Controllers\TagController;
 use TechStudio\Core\app\Http\Controllers\CommentController;
@@ -30,6 +31,14 @@ Route::prefix('articles')->group(function () {
     // Route::get('/category/{slug}/common', [ArticleController::class, 'articlesByCategoryCommon']);
     
 });
+
+Route::prefix('home')->group(function() {
+    
+    Route::get('/common', [BlogHomeController::class, 'getHomeCommon']);
+    // Route::get('/data', [BlogHomeController::class, 'getHomeData']);
+
+});
+
 
 Route::middleware('login_optional')->prefix('article')->group(function() {
 
