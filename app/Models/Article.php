@@ -6,13 +6,11 @@ use TechStudio\Core\app\Models\Category;
 use TechStudio\Core\app\Models\Comment;
 use TechStudio\Core\app\Models\Traits\taggeable;
 
-
 use Exception;
 use App\Helper\HtmlContent;
 use App\Helper\PageContent;
 use Laravel\Scout\Searchable;
 use App\Models\Traits\Likeable;
-// use App\Models\Traits\taggeable;
 use App\Models\Traits\Bookmarkable;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
@@ -72,13 +70,13 @@ class Article extends Model
             ->whereNull('parent_id')->where('status', 'approved');
     }
 
-    // public function getSummary()
-    // {
-    //     if (is_null($this->summary)) {
-    //         $this->updateSummary();
-    //     }
-    //     return $this->summary;
-    // }
+    public function getSummary()
+    {
+        if (is_null($this->summary)) {
+            $this->updateSummary();
+        }
+        return $this->summary;
+    }
     
     // public function updateSummary()
     // {
@@ -100,10 +98,10 @@ class Article extends Model
     //     return HtmlContent::getImageUrls($this->content);
     // }
 
-    // public function minutesToRead()
-    // {
-    //     return (new PageContent($this->content))->getEstimatedTotalTime();
-    // }
+    public function minutesToRead()
+    {
+        return (new PageContent($this->content))->getEstimatedTotalTime();
+    }
 
     // public static function restoreArticle($oldArticle)
     // {
