@@ -10,7 +10,7 @@ use TechStudio\Core\app\Models\Tag;
 use TechStudio\Blog\app\Models\Article;
 use TechStudio\Blog\app\Services\Article\ArticleService;
 use TechStudio\Core\app\Services\Category\CategoryService;
-
+use TechStudio\Core\app\Helper\ArrayPaginate;
 use TechStudio\Core\app\Models\Alias;
 
 
@@ -31,7 +31,6 @@ use TechStudio\Core\app\Models\Alias;
 // use App\Services\File\FileService;
 // use Illuminate\Database\Eloquent\ModelNotFoundException;
 // use Illuminate\Validation\ValidationException;
-// use App\Helper\ArrayPaginate;
 // use Illuminate\Support\Facades\Auth;
 // use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Illuminate\Support\Facades\Validator;
@@ -71,33 +70,32 @@ class ArticleController extends Controller
     //     return $this->articleService->getArticle($slug);
     // }
 
-    // public function listArticles(Request $request)
-    // {
-    //     return $this->articleService->getArticles(request:$request);
-    // }
+    public function listArticles(Request $request)
+    {
+        return $this->articleService->getArticles(request:$request);
+    }
 
-    // public function articlesArchiveCommon()
-    // {
-    //     return [
-            // 'pinnedArticles' => $this->articleService->pinnedArticles() , //DEPRECATED
-            // ToDo CORE :
-            // 'categories' => $this->categoryService->getCategoriesForFilter(new Article()),  
-        // ];
+    public function articlesArchiveCommon()
+    {
+        return [
+            'pinnedArticles' => $this->articleService->pinnedArticles() , //DEPRECATED
+            'categories' => $this->categoryService->getCategoriesForFilter(new Article()),  
+        ];
 
-    // }
+    }
 
-    // public function articlesSectionCommon()
-    // {
-    //     return [
-    //         'pinnedArticles' => $this->articleService->pinnedArticles(),
-    //     ];
-    // }
+    public function articlesSectionCommon()
+    {
+        return [
+            'pinnedArticles' => $this->articleService->pinnedArticles(),
+        ];
+    }
 
-    // public function articlesSectionList()
-    // {
-    //     $result = $this->articleService->getArticles('articles');
-    //     return ArrayPaginate::paginate($result, 2);
-    // }
+    public function articlesSectionList()
+    {
+        $result = $this->articleService->getArticles('articles');
+        return ArrayPaginate::paginate($result, 2);
+    }
 
     // public function storeFeedback(Article $slug,Request $request)
     // {
@@ -115,10 +113,10 @@ class ArticleController extends Controller
     //     ];
     // }
 
-    // public function articlesByCategoryCommon(Category $slug)
-    // {
-    //     return  $this->articleService->getFirstArticleByCategory($slug);
-    // }
+    public function articlesByCategoryCommon($slug)
+    {
+        return  $this->articleService->getFirstArticleByCategory($slug);
+    }
 
     // public function storeBookmark(Article $slug,Request $request)
     // {

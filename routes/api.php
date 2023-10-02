@@ -21,13 +21,20 @@ use Illuminate\Support\Facades\Config;
 |
 */
 
+
+if (Config::get('flags.community')) {
+    // Route::post('/article/{slug}/bookmark', 'App\Http\Controllers\ArticleController@storeBookmark')->middleware('login_required');
+    // Route::post('/article/{slug}/feedback', 'App\Http\Controllers\ArticleController@storeFeedback')->middleware('login_required');
+    // Route::post('/article/{slug}/comments', 'App\Http\Controllers\CommentController@store')->middleware('login_required');
+    // Route::post('/article/{slug}/comments/{id}/feedback', 'App\Http\Controllers\CommentController@storeFeedback')->middleware('login_required');
+}
+
 // ============ CLIENT SIDE ===============
 Route::prefix('articles')->group(function () {
 
-    // Route::get('/archive/common', [ArticleController::class, 'articlesArchiveCommon']);
-    // Route::get('/archive/list', [ArticleController::class, 'listArticles']);
-    // Route::get('/section/common', [ArticleController::class, 'articlesSectionCommon']);
-    // Route::get('/section/list', [ArticleController::class, 'articlesSectionList']);
+    Route::get('/archive/common', [ArticleController::class, 'articlesArchiveCommon']);
+    Route::get('/archive/list', [ArticleController::class, 'listArticles']);
+    Route::get('/section/common', [ArticleController::class, 'articlesSectionCommon']);
     // Route::get('/category/{slug}/common', [ArticleController::class, 'articlesByCategoryCommon']);
     
 });
@@ -42,8 +49,8 @@ Route::prefix('home')->group(function() {
 
 Route::middleware('login_optional')->prefix('article')->group(function() {
 
-    // Route::get('/{slug}', [ArticleController::class, 'getArticle']);
-    // Route::get('/{slug}/comments', [CommentController::class, 'getComments']);
+    Route::get('/{slug}', [ArticleController::class, 'getArticle']);
+    Route::get('/{slug}/comments', [CommentController::class, 'getComments']);
 
 });
 
