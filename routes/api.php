@@ -35,7 +35,7 @@ Route::prefix('articles')->group(function () {
 Route::prefix('home')->group(function() {
     
     Route::get('/common', [BlogHomeController::class, 'getHomeCommon']);
-    // Route::get('/data', [BlogHomeController::class, 'getHomeData']);
+    Route::get('/data', [BlogHomeController::class, 'getHomeData']);
 
 });
 
