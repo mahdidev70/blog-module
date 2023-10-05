@@ -20,8 +20,7 @@ use Illuminate\Support\Facades\Config;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-
-
+Route::prefix('{locale?}/api')->group(function () {
 
 // ============ CLIENT SIDE ===============
 Route::prefix('articles')->group(function () {
@@ -33,7 +32,7 @@ Route::prefix('articles')->group(function () {
     
 });
 
-Route::prefix('{locale?}/api/home')->group(function() {
+Route::prefix('home')->group(function() {
     
     Route::get('/common', [BlogHomeController::class, 'getHomeCommon']);
     Route::get('/data', [BlogHomeController::class, 'getHomeData']);
@@ -51,7 +50,7 @@ Route::middleware('login_optional')->prefix('article')->group(function() {
 Route::middleware('login_required')->group(function () {
     
     // if (Config::get('flags.community')) {
-    //         Route::post('article/{slug}/bookmark', [ArticleController::class, 'storeBookmark']);
+            Route::post('article/{slug}/bookmark', [ArticleController::class, 'storeBookmark']);
     //         Route::post('article/{slug}/feedback', [ArticleController::class, 'storeFeedback']);
     //         Route::post('/comments', [CommentController::class, 'store']);
     //         Route::post('/comments/{id}/feedback', [CommentController::class, 'storeFeedback']);
@@ -101,4 +100,5 @@ Route::middleware('login_required')->group(function () {
 });
 
 
+});
 

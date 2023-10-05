@@ -118,25 +118,25 @@ class ArticleController extends Controller
         return  $this->articleService->getFirstArticleByCategory($slug);
     }
 
-    // public function storeBookmark(Article $slug,Request $request)
-    // {
-    //     if (!$request->has('action') || !in_array($request->action,['save','clear'])){
-    //         throw new BadRequestException("'action' request data field must be either of [clear, save]."); // improve validation
-    //     }
-    //     $currentUserAction = $request->action;
-    //     if ($request->action == 'clear'){
-    //         $slug->clearBookmarkBy(Auth::user()->id);
-    //     }else{
-    //         $slug->saveBy(Auth::user()->id);
-    //     }
+    public function storeBookmark(Article $slug,Request $request)
+    {
+        if (!$request->has('action') || !in_array($request->action,['save','clear'])){
+            throw new BadRequestException("'action' request data field must be either of [clear, save]."); // improve validation
+        }
+        $currentUserAction = $request->action;
+        if ($request->action == 'clear'){
+            $slug->clearBookmarkBy(Auth::user()->id);
+        }else{
+            $slug->saveBy(Auth::user()->id);
+        }
 
 
-    //     return [
-    //         'bookmark' => [
-    //             'currentUserAction' => $currentUserAction,
-    //         ],
-    //     ];
-    // }
+        return [
+            'bookmark' => [
+                'currentUserAction' => $currentUserAction,
+            ],
+        ];
+    }
 
     // public function getEditorCommon(Request $request)
     // {
