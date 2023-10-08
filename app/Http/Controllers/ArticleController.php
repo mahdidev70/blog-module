@@ -31,8 +31,8 @@ use TechStudio\Core\app\Models\Alias;
 // use App\Services\File\FileService;
 // use Illuminate\Database\Eloquent\ModelNotFoundException;
 // use Illuminate\Validation\ValidationException;
-// use Illuminate\Support\Facades\Auth;
-// use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Illuminate\Support\Facades\Auth;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Illuminate\Support\Facades\Validator;
 
 // use App\Helper\HtmlContent;
@@ -65,10 +65,13 @@ class ArticleController extends Controller
     //     return $authorOptions;
     // }
 
-    // public function getArticle(Article $slug)
-    // {
-    //     return $this->articleService->getArticle($slug);
-    // }
+    public function getArticle($slug)
+    {
+
+        $slug = request()->slug;
+        $getArticle = Article::where('slug', $slug)->firstOrFail();
+        return $this->articleService->getArticle($getArticle);
+    }
 
     public function listArticles(Request $request)
     {
@@ -97,29 +100,39 @@ class ArticleController extends Controller
         return ArrayPaginate::paginate($result, 2);
     }
 
-    // public function storeFeedback(Article $slug,Request $request)
-    // {
-    //     if (!$request->has('action') || !in_array($request->action,['clear', 'like', 'dislike'])){
-    //         throw new BadRequestException("'action' request data field must be either of [clear, like]."); // improve validation
-    //     }
-    //     $currentUserAction = $request->action;
-    //     $functionName = strtolower($request->action).'By';
-    //     $slug->$functionName(Auth::user()->id);
-    //     return [
-    //         'feedback' => [
-    //             'likesCount' => $slug->likes_count??0,
-    //             'currentUserAction' => $currentUserAction,
-    //         ],
-    //     ];
-    // }
+    public function storeFeedback($slug,Request $request)
+    {
+        $slug = request()->slug;
+        
+        $slug = Article::where('slug', $slug)->firstOrFail();
+
+        
+        if (!$request->has('action') || !in_array($request->action,['clear', 'like', 'dislike'])){
+            throw new BadRequestException("'action' request data field must be either of [clear, like]."); // improve validation
+        }
+        $currentUserAction = $request->action;
+        $functionName = strtolower($request->action).'By';
+        $slug->$functionName(Auth::user()->id);
+        return [
+            'feedback' => [
+                'likesCount' => $slug->likes_count??0,
+                'currentUserAction' => $currentUserAction,
+            ],
+        ];
+    }
 
     public function articlesByCategoryCommon($slug)
     {
-        return  $this->articleService->getFirstArticleByCategory($slug);
+        $slug = request()->slug;
+        $getCategory = Category::where('slug', $slug)->firstOrFail();
+        return  $this->articleService->getFirstArticleByCategory($getCategory);
     }
 
-    public function storeBookmark(Article $slug,Request $request)
+    public function storeBookmark($slug,Request $request)
     {
+        $slug = request()->slug;
+        $slug = Article::where('slug', $slug)->firstOrFail();
+
         if (!$request->has('action') || !in_array($request->action,['save','clear'])){
             throw new BadRequestException("'action' request data field must be either of [clear, save]."); // improve validation
         }

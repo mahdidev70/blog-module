@@ -129,71 +129,73 @@ class ArticleService
     //     return Section::where('slug', 'homepage')->first()->toNavbar();
     // }
 
-    // public function getArticle($article)
-    // {
-    //     if (!is_null($article->tags)){
-    //         $tags = $article->tags->map(fn ($tag) => [
-    //             'slug' => $tag?->slug,
-    //             'title' => $tag?->title,
-    //         ]);
-    //     }else{
-    //         $tags = null;
-    //     }
-    //     $article->increment('viewsCount');
-    //     $user_id = Auth::user()?->id;
-    //     return [
-    //         'title' => $article->title,
-    //         'publicationDate' => $article->publicationDate,
-    //         'likesCount' => $article->likes_count??0,
-    //         'currentUserLiked' => $user_id && (bool)$article->isLikedBy($user_id),
-    //         'currentUserBookmarked' => $user_id && (bool)$article->isSavedBy($user_id),
-    //         'viewsCount' => $article->viewsCount,
-    //         'bannerUrl' => $article->bannerUrl,
-    //         'content' => $article->content,
-    //         'summary' => $article->getSummary(),
-    //         'relevantContentCards' => $this->getRelevantContentCards($article),
-    //         'tags' => $tags,
-    //         'author' => [
-    //             "displayName" => 'دیجی‌کالا',
-    //             "avatarUrl" => 'https://storage.sa-test.techstudio.diginext.ir/static/digikala.png',
-    //             "id" => 28,
-    //         ],  // TODO: replace with user display name
-    //         "minutesToRead" => $article->minutesToRead(),
-    //     ];
+    public function getArticle($article)
+    {
+        if (!is_null($article->tags)){
+            $tags = $article->tags->map(fn ($tag) => [
+                'slug' => $tag?->slug,
+                'title' => $tag?->title,
+            ]);
+        }else{
+            $tags = null;
+        }
+        $article->increment('viewsCount');
+        $user_id = Auth::user()?->id;
+        return [
+            'title' => $article->title,
+            'publicationDate' => $article->publicationDate,
+            'likesCount' => $article->likes_count??0,
+            //ToDo AmirMahdi,
+            // 'currentUserLiked' => $user_id && (bool)$article->isLikedBy($user_id),
+            // 'currentUserBookmarked' => $user_id && (bool)$article->isSavedBy($user_id),
+            'viewsCount' => $article->viewsCount,
+            'bannerUrl' => $article->bannerUrl,
+            'content' => $article->content,
+            'summary' => $article->getSummary(),
+            'relevantContentCards' => $this->getRelevantContentCards($article),
+            'tags' => $tags,
+            'author' => [
+                "displayName" => 'دیجی‌کالا',
+                "avatarUrl" => 'https://storage.sa-test.techstudio.diginext.ir/static/digikala.png',
+                "id" => 28,
+            ],  // TODO: replace with user display name
+            "minutesToRead" => $article->minutesToRead(),
+        ];
 
-    // }
-    // public function getRelevantContentCards(Article $article) {
-    //     $relevantArticlesIds = null;
-    //     try {
-    //         $response = Http::timeout(1)->get("http://recommendation:5600/" . $article->id)->json();
-    //         $relevantArticlesIds = $response["similar_articles"];
-    //         $relevantArticles = Article::with('category')->orderByDesc('publicationDate')->whereIn('id', $relevantArticlesIds)->limit(3)->get();
-    //         if (count($relevantArticles) == 0) {
-    //             throw new \Exception('Received empty list from recommendation system.');
-    //         }
-    //     } catch (\Exception $e) {
-    //         \Log::warning('Recommendation system error. Reason: ' . $e);
-    //         $relevantArticles = Article::with('category')->orderByDesc('publicationDate')->take(3)->get();
-    //     }
-    //     return $relevantArticles->map(fn ($a) => [
-    //         'bannerUrl' => $a->bannerUrl,
-    //         'publicationDate' => $a->publicationDate,
-    //         'title' => $a->title,
-    //         'summary' => $a->getSummary(),
-    //         'slug' => $a->slug,
-    //         'type' => 'article',
-    //         "minutesToRead" => $a->minutesToRead(),
-    //         'category' => [
-    //             "slug" => $a->category ? $a->category->slug : 'no-category',
-    //             "title" => $a->category ? $a->category->title : 'بدون دسته‌بندی',
-    //         ],
-    //         'author' => [
-    //             "displayName" => 'دیجی‌کالا',
-    //             "avatarUrl" => 'https://storage.sa-test.techstudio.diginext.ir/static/digikala.png',
-    //             "id" => 28,
-    //         ],  // TODO: replace with user display name
-    //     ]);
-    // }
+    }
+    
+    public function getRelevantContentCards(Article $article) {
+        $relevantArticlesIds = null;
+        try {
+            $response = Http::timeout(1)->get("http://recommendation:5600/" . $article->id)->json();
+            $relevantArticlesIds = $response["similar_articles"];
+            $relevantArticles = Article::with('category')->orderByDesc('publicationDate')->whereIn('id', $relevantArticlesIds)->limit(3)->get();
+            if (count($relevantArticles) == 0) {
+                throw new \Exception('Received empty list from recommendation system.');
+            }
+        } catch (\Exception $e) {
+            \Log::warning('Recommendation system error. Reason: ' . $e);
+            $relevantArticles = Article::with('category')->orderByDesc('publicationDate')->take(3)->get();
+        }
+        return $relevantArticles->map(fn ($a) => [
+            'bannerUrl' => $a->bannerUrl,
+            'publicationDate' => $a->publicationDate,
+            'title' => $a->title,
+            'summary' => $a->getSummary(),
+            'slug' => $a->slug,
+            'type' => 'article',
+            "minutesToRead" => $a->minutesToRead(),
+            'category' => [
+                "slug" => $a->category ? $a->category->slug : 'no-category',
+                "title" => $a->category ? $a->category->title : 'بدون دسته‌بندی',
+            ],
+            'author' => [
+                "displayName" => 'دیجی‌کالا',
+                "avatarUrl" => 'https://storage.sa-test.techstudio.diginext.ir/static/digikala.png',
+                "id" => 28,
+            ],  // TODO: replace with user display name
+        ]);
+    }
 
     public function pinnedArticles()
     {

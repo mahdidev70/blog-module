@@ -20,46 +20,45 @@ use Illuminate\Support\Facades\Config;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+
 // Route::prefix('{locale?}/api')->group(function () {
 
     // ============ CLIENT SIDE ===============
     Route::prefix('articles')->group(function () {
 
-        Route::get('/archive/common', [ArticleController::class, 'articlesArchiveCommon']);
-        Route::get('/archive/list', [ArticleController::class, 'listArticles']);
-        Route::get('/section/common', [ArticleController::class, 'articlesSectionCommon']);
-        // Route::get('/category/{slug}/common', [ArticleController::class, 'articlesByCategoryCommon']);
+        Route::get('/archive/common', [ArticleController::class, 'articlesArchiveCommon']); //=> Done
+        Route::get('/archive/list', [ArticleController::class, 'listArticles']); //=> Done
+        Route::get('/section/common', [ArticleController::class, 'articlesSectionCommon']); //=> Done
+        Route::get('/category/{slug}/common', [ArticleController::class, 'articlesByCategoryCommon']); //=> Done
         
     });
 
     Route::prefix('home')->group(function() {
         
-        Route::get('/common', [BlogHomeController::class, 'getHomeCommon']);
-        Route::get('/data', [BlogHomeController::class, 'getHomeData']);
+        Route::get('/common', [BlogHomeController::class, 'getHomeCommon']); //=> Done
+        Route::get('/data', [BlogHomeController::class, 'getHomeData']); //=> Done
         
     });
 
-
     Route::middleware('login_optional')->prefix('article')->group(function() {
         
-        // Route::get('/{slug}/comments', [CommentController::class, 'getComments']);
-        // Route::get('/{slug}', [ArticleController::class, 'getArticle']);
-        
+        Route::get('/{slug}/comments', [CommentController::class, 'getComments']);
+        Route::get('/{slug}', [ArticleController::class, 'getArticle']); 
     });
 
     Route::middleware('login_required')->group(function () {
         
-        // if (Config::get('flags.community')) {
-                Route::post('article/{slug}/bookmark', [ArticleController::class, 'storeBookmark']);
-        //         Route::post('article/{slug}/feedback', [ArticleController::class, 'storeFeedback']);
-        //         Route::post('/comments', [CommentController::class, 'store']);
-        //         Route::post('/comments/{id}/feedback', [CommentController::class, 'storeFeedback']);
-        // };
+        if (Config::get('flags.community')) {
+            Route::prefix('article/{slug}')->group(function() {
+                Route::post('/bookmark', [ArticleController::class, 'storeBookmark']);
+                Route::post('/feedback', [ArticleController::class, 'storeFeedback']);
+                Route::post('/comments', [CommentController::class, 'store']);
+                Route::post('/comments/{id}/feedback', [CommentController::class, 'storeFeedback']);
+                    
+            });
+        };
         
         
-        // Route::prefix('article/{slug}')->group(function() {
-            
-        // });
         
         
         // ============= PANEL SIDE ===============
