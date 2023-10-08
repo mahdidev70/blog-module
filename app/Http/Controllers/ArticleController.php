@@ -8,10 +8,15 @@ use Carbon\Carbon;
 use TechStudio\Core\app\Models\Category;
 use TechStudio\Core\app\Models\Tag;
 use TechStudio\Blog\app\Models\Article;
+use TechStudio\Core\app\Models\UserProfile;
 use TechStudio\Blog\app\Services\Article\ArticleService;
 use TechStudio\Core\app\Services\Category\CategoryService;
+use TechStudio\Core\app\Services\File\FileService;
 use TechStudio\Core\app\Helper\ArrayPaginate;
 use TechStudio\Core\app\Models\Alias;
+use TechStudio\Core\app\Helper\HtmlContent;
+use TechStudio\Core\app\Helper\SlugGenerator;
+use Illuminate\Support\Facades\Auth;
 
 
 
@@ -26,12 +31,10 @@ use TechStudio\Core\app\Models\Alias;
 // use App\Helper\SlugGenerator;
 // use App\Models\Alias;
 // use App\Models\Bookmark;
-// use App\Models\UserProfile;
 // use App\Services\Category\CategoryService;
 // use App\Services\File\FileService;
-// use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
 // use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Auth;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Illuminate\Support\Facades\Validator;
 
@@ -39,31 +42,31 @@ use Illuminate\Support\Facades\Validator;
 
 class ArticleController extends Controller
 {
-    public function __construct(protected ArticleService $articleService,  protected CategoryService $categoryService)
+    public function __construct(protected ArticleService $articleService, protected CategoryService $categoryService)
     { }
 
-    // private function authors()
-    // {
-    //     $user = Auth::user();
+    private function authors()
+    {
+        $user = Auth::user();
 
-    //     $authorOptions = [
-    //         [
-    //             'displayName' => $user->getDisplayName(),
-    //             'id' => $user->id,
-    //             'type' => 'user',
-    //         ]
-    //     ];
+        $authorOptions = [
+            [
+                'displayName' => $user->getDisplayName(),
+                'id' => $user->id,
+                'type' => 'user',
+            ]
+        ];
 
-    //     foreach (Alias::all() as $alias) {
-    //         $authorOptions[] = [
-    //             'displayName' => $alias->name,
-    //             'id' => $alias->id,
-    //             'type' => 'alias',
-    //         ];
-    //     }
+        foreach (Alias::all() as $alias) {
+            $authorOptions[] = [
+                'displayName' => $alias->name,
+                'id' => $alias->id,
+                'type' => 'alias',
+            ];
+        }
 
-    //     return $authorOptions;
-    // }
+        return $authorOptions;
+    }
 
     public function getArticle($slug)
     {
@@ -151,250 +154,252 @@ class ArticleController extends Controller
         ];
     }
 
-    // public function getEditorCommon(Request $request)
-    // {
-    //     $categories = Category::where('table_type','App\Models\Article')->get()->map(function ($category) {
-    //         return [
-    //             'title' => $category->title,
-    //             'slug' => $category->slug,
-    //         ];
-    //     });
+    public function getEditorCommon(Request $request)
+    {
+        $categories = Category::where('table_type','TechStudio\Blog\app\Models\Article')->get()->map(function ($category) {
+            return [
+                'title' => $category->title,
+                'slug' => $category->slug,
+            ];
+        });
 
-    //     $tags = Tag::all()->map(function ($tag) {
-    //         return [
-    //             'title' => $tag->title,
-    //             'slug' => $tag->slug,
-    //         ];
-    //     });
+        $tags = Tag::all()->map(function ($tag) {
+            return [
+                'title' => $tag->title,
+                'slug' => $tag->slug,
+            ];
+        });
 
-    //     return [
-    //         'categories' => $categories,
-    //         'tags' => $tags,
-    //         //ToDo Core
-    //         // 'authorOptions' => $this->authors(),
-    //     ];
-    // }
+        return [
+            'categories' => $categories,
+            'tags' => $tags,
+            'authorOptions' => $this->authors(),
+        ];
+    }
 
-    // public function getEditorData($id)
-    // {
-    //     $article = Article::with('tags', 'author')->where('id', $id)->firstOrFail();
+    public function getEditorData($local, $id)
+    {
+        $article = Article::with('tags', 'author')->where('id', $id)->firstOrFail();
 
-    //     if ($article->author_type == 'App\\Models\\Alias') {
-    //         $article->author_type = 'alias';
-    //     }elseif ($article->author_type == 'App\\Models\\UserProfile') {
-    //         $article->author_type = 'user';
-    //     }
+        if ($article->author_type == 'TechStudio\\Core\\app\\Models\\Alias') {
+            $article->author_type = 'alias';
+        }elseif ($article->author_type == 'TechStudio\\Core\\app\\Models\\UserProfile') {
+            $article->author_type = 'user';
+        }
 
-    //     $content = $article->content;
-    //     for ($i = 0; $i < count($content); $i++) {
-    //         $block = $content[$i];
-    //         if ($block['type'] == 'html' && is_string($block['content'])) {
-    //             // legacy html block. upgrade it:
-    //             $replacementBlocks = HtmlContent::htmlToBlocks($block['content']);
-    //             array_splice($content, $i, 1);
-    //             array_splice($content, $i, 0, $replacementBlocks);
-    //         }
-    //     }
+        $content = $article->content;
+        for ($i = 0; $i < count($content); $i++) {
+            $block = $content[$i];
+            if ($block['type'] == 'html' && is_string($block['content'])) {
+                // legacy html block. upgrade it:
+                $replacementBlocks = HtmlContent::htmlToBlocks($block['content']);
+                array_splice($content, $i, 1);
+                array_splice($content, $i, 0, $replacementBlocks);
+            }
+        }
 
-    //      return [
-    //             'id' => $article->id,
-    //             'title' => $article->title,
-    //             'slug' => $article->slug,
-    //             'bannerUrl' => $article->bannerUrl,
-    //             'bannerUrlMobile' => $article->bannerUrlMobile,
-    //             'summary' => $article->summary,
-    //             'category' => $article->category['slug'],
-    //             'tags' => $article->tags->map(function ($tag) {
-    //                 return [
-    //                     'title' => $tag->title,
-    //                     'slug' => $tag->slug,
-    //                 ];
-    //             }),
-    //             'content' => $content,
-    //             'seoTitle' => $article->seoTitle,
-    //             'seoKeyword' => $article->seoKeyword,
-    //             'seoDescription' => $article->seoDescription,
-    //             'publicationDate' => $article->publicationDate,
-    //             'author' => [
-    //                 'displayName' => $article->author->getDisplayName(),
-    //                 'type' => $article->author_type,
-    //                 'id' => $article->author->id,
-    //             ],
-    //         ];
+         return [
+                'id' => $article->id,
+                'title' => $article->title,
+                'slug' => $article->slug,
+                'bannerUrl' => $article->bannerUrl,
+                'bannerUrlMobile' => $article->bannerUrlMobile,
+                'summary' => $article->summary,
+                'category' => $article->category['slug'],
+                'tags' => $article->tags->map(function ($tag) {
+                    return [
+                        'title' => $tag->title,
+                        'slug' => $tag->slug,
+                    ];
+                }),
+                'content' => $content,
+                'seoTitle' => $article->seoTitle,
+                'seoKeyword' => $article->seoKeyword,
+                'seoDescription' => $article->seoDescription,
+                'publicationDate' => $article->publicationDate,
+                'author' => [
+                    'displayName' => $article->author->getDisplayName(),
+                    'type' => $article->author_type,
+                    'id' => $article->author->id,
+                ],
+            ];
 
-    // }
+    }
 
     
-    // public function updateEditorData(Request $request)
-    // {
-    //     $data = $request;
+    public function updateEditorData(Request $request)
+    {
+        $data = $request;
 
-    //     if ($data['id']) {
-    //         $article = Article::where('id', $request->id)->firstOrFail();
-    //     } else {
-    //         $article = new Article;
-    //         $article->status = 'draft';
-    //     }
+        if ($data['id']) {
+            $article = Article::where('id', $request->id)->firstOrFail();
+        } else {
+            $article = new Article;
+            $article->status = 'draft';
+        }
+        if ($data->author) {
+            if ($data->author['type'] == 'user') {
+                $author = UserProfile::where('id', $data->author['id'])->firstOrFail();
+            } else if ($data->author['type'] == 'alias') {
+                $author = Alias::where('id', $data->author['id'])->firstOrFail();
+            } else {
+                throw new BadRequestException("'author.type' request data field must be either of [user, alias].");
+            }
+        } else {
+            $author = Auth::user();
+        }
+        $article->author()->associate($author);
 
-    //     if ($data->author) {
-    //         if ($data->author['type'] == 'user') {
-    //             $author = UserProfile::where('id', $data->author['id'])->firstOrFail();
-    //         } else if ($data->author['type'] == 'alias') {
-    //             $author = Alias::where('id', $data->author['id'])->firstOrFail();
-    //         } else {
-    //             throw new BadRequestException("'author.type' request data field must be either of [user, alias].");
-    //         }
-    //     } else {
-    //         $author = \Auth::user();
-    //     }
-    //     $article->author()->associate($author);
+        $article->title = $data['title'];
+        if (!$article->slug) {
+            $article->slug = SlugGenerator::transform(($data['title']));
+        }else{
+            $article->slug = $data['slug'];
+        }
+        $article->bannerUrl = $data['bannerUrl'];
+        $article->bannerUrlMobile = $data['bannerUrlMobile'];
+        $article->summary = $data['summary'];
 
-    //     $article->title = $data['title'];
-    //     if (!$article->slug) {
-    //         $article->slug = SlugGenerator::transform(($data['title']));
-    //     }else{
-    //         $article->slug = $data['slug'];
-    //     }
-    //     $article->bannerUrl = $data['bannerUrl'];
-    //     $article->bannerUrlMobile = $data['bannerUrlMobile'];
-    //     $article->summary = $data['summary'];
+        $category = Category::where('slug', $data['category'])->firstOrFail();
+        $article->category()->associate($category);
 
-    //     $category = Category::where('slug', $data['category'])->firstOrFail();
-    //     $article->category()->associate($category);
-
-    //     if ($data['tags']) {
-    //         $tagArray= [];
-    //         foreach($data['tags'] as $tag){
-    //             array_push($tagArray,$tag['slug']);
-    //         }
-    //         $tags = Tag::whereIn('slug', $tagArray)->get();
-    //         if (count($tags) < count($data['tags'])) {
-    //             $e = new ModelNotFoundException;
-    //             $e->setModel(Tag::class);
-    //             throw $e;
-    //         }
-
-    //         $article->tags()->sync($tags->pluck('id'));
-    //     }
+        //ToDo tags AmirMahdi
+        if ($data['tags']) {
+            $tagArray = [];
+            foreach ($data['tags'] as $tag) {
+                array_push($tagArray, $tag);
+            }
+            $tags = Tag::whereIn('slug', $tagArray)->get();
+        
+            // Check if all tags are found
+            if (count($tags) !== count($data['tags'])) {
+                $e = new ModelNotFoundException;
+                $e->setModel(Tag::class);
+                throw $e;
+            }
+        
+            $tagIds = $tags->pluck('id')->toArray();
+            $article->tags()->sync($tagIds);
+        }
     
-    //     $article->content = $data['content'] ?? [];
+        $article->content = $data['content'] ?? [];
 
-    //     $article->seoDescription = $data['seoDescription'];
-    //     $article->seoTitle = $data['seoTitle'];
-    //     $article->seoKeyword = $data['seoKeyword'];
+        $article->seoDescription = $data['seoDescription'];
+        $article->seoTitle = $data['seoTitle'];
+        $article->seoKeyword = $data['seoKeyword'];
 
-    //     $article->publicationDate = $data['publicationDate'];
+        $article->publicationDate = $data['publicationDate'];
 
-    //     $article->save();
+        $article->save();
 
-    //     return ['id' => $article->id];
+        return ['id' => $article->id];
 
-    // }
+    }
 
-    // public function getArticleListData(Request $request)
-    // {
+    public function getArticleListData(Request $request)
+    {
 
-    //     $query = Article::with('author', 'comments', 'category');
+        $query = Article::with('author', 'comments', 'category');
 
-    //     if ($request->filled('search')) {
-    //         $txt = $request->get('search');
+        if ($request->filled('search')) {
+            $txt = $request->get('search');
 
-    //         $query->where(function ($q) use ($txt) {
-    //             $q->where('title', 'like', '%' . $txt . '%');
-    //         });
-    //     }
+            $query->where(function ($q) use ($txt) {
+                $q->where('title', 'like', '%' . $txt . '%');
+            });
+        }
 
-    //     //Filtering
-    //     if (isset($request->authorId) && $request->authorId != null ) {
-    //         $query->where('author_id', $request->input('authorId'));
-    //     }
+        //Filtering
+        if (isset($request->authorId) && $request->authorId != null ) {
+            $query->where('author_id', $request->input('authorId'));
+        }
 
-    //     if (isset($request->authorType) && $request->authorType != null) {
-    //         if ($request->authorType == 'user') {
-    //             $query->where('author_type', 'App\Models\UserProfile');
-    //         }elseif ($request->authorType == 'alias') {
-    //             $query->where('author_type', 'App\Models\Alias');
-    //         }
-    //     }
+        if (isset($request->authorType) && $request->authorType != null) {
+            if ($request->authorType == 'user') {
+                $query->where('author_type', 'App\Models\UserProfile');
+            }elseif ($request->authorType == 'alias') {
+                $query->where('author_type', 'App\Models\Alias');
+            }
+        }
 
-    //     if (isset($request->categorySlug) && $request->categorySlug != null) {
-    //         $query->whereHas('category', function ($categoryQuery) use ($request) {
-    //             $categoryQuery->where('slug', $request->input('categorySlug'));
-    //         });
-    //     }
+        if (isset($request->categorySlug) && $request->categorySlug != null) {
+            $query->whereHas('category', function ($categoryQuery) use ($request) {
+                $categoryQuery->where('slug', $request->input('categorySlug'));
+            });
+        }
 
-    //     if (isset($request->publicationDateMax) && $request->publicationDateMax != null ) {
-    //         $query->whereDate('publicationDate', '<=', $request->input('publicationDateMax'));
-    //     }
+        if (isset($request->publicationDateMax) && $request->publicationDateMax != null ) {
+            $query->whereDate('publicationDate', '<=', $request->input('publicationDateMax'));
+        }
 
-    //     if (isset($request->publicationDateMin) && $request->publicationDateMin != null ) {
-    //         $query->whereDate('publicationDate', '>=', $request->input('publicationDateMin'));
-    //     }
+        if (isset($request->publicationDateMin) && $request->publicationDateMin != null ) {
+            $query->whereDate('publicationDate', '>=', $request->input('publicationDateMin'));
+        }
 
-    //     if (isset($request->status) && $request->status != null ) {
-    //         $query->where('status', $request->input('status'));
-    //     }
+        if (isset($request->status) && $request->status != null ) {
+            $query->where('status', $request->input('status'));
+        }
 
-    //     if ($request->has('sort')) {
-    //         if ($request->sort == 'bookmarks') {
-    //             $query->orderByDesc('bookmarks_count');
-    //         } elseif ($request->sort == 'views') {
-    //             $query->orderByDesc('viewsCount');
-    //         } elseif ($request->sort == 'comments') {
-    //             $query->withCount('comments')->orderByDesc('comments_count');
-    //         }
-    //     }
+        if ($request->has('sort')) {
+            if ($request->sort == 'bookmarks') {
+                $query->orderByDesc('bookmarks_count');
+            } elseif ($request->sort == 'views') {
+                $query->orderByDesc('viewsCount');
+            } elseif ($request->sort == 'comments') {
+                $query->withCount('comments')->orderByDesc('comments_count');
+            }
+        }
 
-    //     $query->orderByDesc('id');
+        $query->orderByDesc('id');
 
-    //     $articles = $query->paginate(10);
+        $articles = $query->paginate(10);
 
-    //     $data = [
-    //         'total' => $articles->total(),
-    //         'per_page' => $articles->perPage(),
-    //         'last_page' => $articles->lastPage(),
-    //         'current_page' => $articles->currentPage(),
-    //         'data' => []
-    //     ];
+        $data = [
+            'total' => $articles->total(),
+            'per_page' => $articles->perPage(),
+            'last_page' => $articles->lastPage(),
+            'current_page' => $articles->currentPage(),
+            'data' => []
+        ];
 
-    //     foreach ($articles as $article) {
+        foreach ($articles as $article) {
 
-    //         $commentsCount = $article->comments->count();
+            $commentsCount = $article->comments->count();
 
-    //         $bookmark = $article->bookmarks->count();
+            $bookmark = $article->bookmarks->count();
 
-    //         if ($article->author_type == 'App\\Models\\Alias') {
-    //             $article->author_type = 'alias';
-    //         }elseif ($article->author_type == 'App\\Models\\UserProfile') {
-    //             $article->author_type = 'user';
-    //         }
+            if ($article->author_type == 'App\\Models\\Alias') {
+                $article->author_type = 'alias';
+            }elseif ($article->author_type == 'App\\Models\\UserProfile') {
+                $article->author_type = 'user';
+            }
 
-    //         $data['data'][] = [
-    //             'id' => $article->id,
-    //             'title' => $article->title,
-    //             'author' =>[
-    //                 'displayName' => $article->author->getDisplayName(),
-    //                 'id' => $article->author->id,
-    //                 'type' => $article->author_type,
-    //             ],
-    //             'category' =>  $article->category->slug,
-    //             'commentsCount' => $commentsCount,
-    //             'bookmarksCount' => $bookmark,
-    //             'publicationDate' => $article->publicationDate,
-    //             'viewsCount' => $article->viewsCount,
-    //             'status' => $article->status,
-    //             'id' => $article->id,
-    //             'slug' => $article->slug,
-    //         ];
-    //     }
+            $data['data'][] = [
+                'id' => $article->id,
+                'title' => $article->title,
+                'author' =>[
+                    'displayName' => $article->author->getDisplayName(),
+                    'id' => $article->author->id,
+                    'type' => $article->author_type,
+                ],
+                'category' =>  $article->category->slug,
+                'commentsCount' => $commentsCount,
+                'bookmarksCount' => $bookmark,
+                'publicationDate' => $article->publicationDate,
+                'viewsCount' => $article->viewsCount,
+                'status' => $article->status,
+                'id' => $article->id,
+                'slug' => $article->slug,
+            ];
+        }
 
-    //     return $data;
-    // }
+        return $data;
+    }
 
     public function getArticleListCommon(Request $request)
     {
         // ToDo Core
-        // $id = Auth::user()->id;
+        $id = Auth::user()->id;
 
         $category = Category::where('table_type','App\Models\Article')->get();
 
@@ -418,7 +423,7 @@ class ArticleController extends Controller
             'counts' => $counts,
             'categories' => $categories,
             // ToDo Core
-            // 'authors' => $this->authors(),
+            'authors' => $this->authors(),
             // If a status is added, it should be added here TODO
             'status' => [
                 'published',
@@ -432,52 +437,52 @@ class ArticleController extends Controller
 
     }
 
-    // public function updateArticlesStatus(Request $request, Article $article)
-    // {
+    public function updateArticlesStatus($local, Article $article, Request $request)
+    {
 
-    //     $validatedData = $request->validate([
-    //         'status' => 'required|in:published,hidden,deleted,draft',
-    //         'ids' => 'required|array',
-    //     ]);
+        $validatedData = $request->validate([
+            'status' => 'required|in:published,hidden,deleted,draft',
+            'ids' => 'required|array',
+        ]);
 
-    //     $ids = collect($validatedData['ids']);
+        $ids = collect($validatedData['ids']);
 
-    //     if ($validatedData['status'] == 'published') {
-    //         $date = Carbon::now()->toDateTimeString();
-    //         $articles = $article->whereIn('id', $ids)->get();
+        if ($validatedData['status'] == 'published') {
+            $date = Carbon::now()->toDateTimeString();
+            $articles = $article->whereIn('id', $ids)->get();
 
-    //         foreach ($articles as $article) {
+            foreach ($articles as $article) {
 
 
-    //             $data = Validator::make($article->toArray(), [
-    //                 //to do AmirMahdi
-    //                 'title' => 'required',
-    //                 'slug' => 'required', //BEDON SPACE -- MAX CHAR = 80 -- add slug generator
-    //                 'content' => 'required',
-    //                 'bannerUrl' => 'required',
-    //                 'category_id' => 'required|integer',
-    //                 'summary' => 'required',
-    //                 // 'publicationDate' => 'required',
-    //                 'viewsCount' => 'integer',
-    //                 'author_id' => 'required|integer',
-    //             ])->validate();
-    //             // if (SlugGenerator::transform($article->slug) != $article->slug) {
-    //             //     throw new BadRequestException("اسلاگ حاوی کارکتر های نامناسب است.");
-    //             // }
+                $data = Validator::make($article->toArray(), [
+                    //to do AmirMahdi
+                    'title' => 'required',
+                    'slug' => 'required', //BEDON SPACE -- MAX CHAR = 80 -- add slug generator
+                    'content' => 'required',
+                    'bannerUrl' => 'required',
+                    'category_id' => 'required|integer',
+                    'summary' => 'required',
+                    // 'publicationDate' => 'required',
+                    'viewsCount' => 'integer',
+                    'author_id' => 'required|integer',
+                ])->validate();
+                // if (SlugGenerator::transform($article->slug) != $article->slug) {
+                //     throw new BadRequestException("اسلاگ حاوی کارکتر های نامناسب است.");
+                // }
 
-    //             $article->whereIn('id', $ids)->update([
-    //                 'status' => 'published',
-    //                 'publicationDate' => $date,
-    //             ]);
-    //         }
-    //     } else {
-    //         $article->whereIn('id', $ids)->update(['status' => $validatedData['status']]);
-    //     }
+                $article->whereIn('id', $ids)->update([
+                    'status' => 'published',
+                    'publicationDate' => $date,
+                ]);
+            }
+        } else {
+            $article->whereIn('id', $ids)->update(['status' => $validatedData['status']]);
+        }
 
-    //     return [
-    //         'updatedArticles' => $ids,
-    //     ];
-    // }
+        return [
+            'updatedArticles' => $ids,
+        ];
+    }
 
     // public function uploadArticleCover(Request $request)
     // {
