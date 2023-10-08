@@ -20,7 +20,7 @@ use Illuminate\Support\Facades\Config;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
-Route::prefix('{locale?}/api')->group(function () {
+// Route::prefix('{locale?}/api')->group(function () {
 
     // ============ CLIENT SIDE ===============
     Route::prefix('articles')->group(function () {
@@ -100,5 +100,5 @@ Route::prefix('{locale?}/api')->group(function () {
     });
 
 
-});
+// });
 
