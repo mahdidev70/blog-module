@@ -3,6 +3,7 @@
 namespace TechStudio\Blog\app\Services\Article;
 
 use TechStudio\Blog\app\Models\Article;
+use Illuminate\Support\Facades\App;
 
 
 use App\Models\Section;
@@ -18,7 +19,9 @@ class ArticleService
 
     public function getFeaturedArticles()
     {
-        return Article::select(['slug', 'title', 'bannerUrl', 'publicationDate', 'summary'])
+        $language = App::currentLocale();
+
+        return Article::where('language', $language)->select(['slug', 'title', 'bannerUrl', 'publicationDate', 'summary'])
             ->orderBy('publicationDate', 'DESC')
             ->take(4)
             ->get()
@@ -36,7 +39,9 @@ class ArticleService
         // if ($slug){
         //     return Section::where('slug',$slug)->first()->expand();
         // }
-        $articlesQuery = Article::query()->with(['tags']);
+        $language = App::currentLocale();
+
+        $articlesQuery = Article::query()->where('language', $language)->with(['tags']);
 
         if ($request->has('category') && strlen($request->category) > 0){
             if ($request->category !== 'all'){
@@ -131,6 +136,7 @@ class ArticleService
 
     public function getArticle($article)
     {
+
         if (!is_null($article->tags)){
             $tags = $article->tags->map(fn ($tag) => [
                 'slug' => $tag?->slug,
@@ -151,7 +157,7 @@ class ArticleService
             'viewsCount' => $article->viewsCount,
             'bannerUrl' => $article->bannerUrl,
             'content' => $article->content,
-            'summary' => $article->getSummary(),
+            // 'summary' => $article->getSummary(),
             'relevantContentCards' => $this->getRelevantContentCards($article),
             'tags' => $tags,
             'author' => [
@@ -199,7 +205,9 @@ class ArticleService
 
     public function pinnedArticles()
     {
-        $pinnedArticles = Article::take(2)->with('tags')->get();
+        $language = App::currentLocale();
+
+        $pinnedArticles = Article::take(2)->with('tags')->where('language', $language)->get();
         return $pinnedArticles->map(fn ($a) => [
             'bannerUrl' => $a->bannerUrl,
             'publicationDate' => $a->publicationDate,
@@ -211,16 +219,19 @@ class ArticleService
                 "avatarUrl" => 'https://storage.sa-test.techstudio.diginext.ir/static/digikala.png',
                 "id" => 28,
             ],  // TODO: replace with user display name
-            'tags' => $a->tags->map(fn ($tag) => [
-                'slug' => $tag->slug,
-                'title' => $tag->title,
-            ])
+            //ToDo Amirmahdi
+            // 'tags' => $a->tags->map(fn ($tag) => [
+            //     'slug' => $tag->slug,
+            //     'title' => $tag->title,
+            // ])
         ]);
     }
 
     public function getFirstArticleByCategory($category)
     {
-        $category = Category::where('slug', $category)->whereNull('deleted_at')->firstOrFail();
+        $language = App::currentLocale();
+        
+        $category = Category::where('slug', $category)->where('language', $language)->whereNull('deleted_at')->firstOrFail();
 
         $categoryTitle = $category->title;
         $article = Article::where('category_id',$category->id)->latest('id')->first();

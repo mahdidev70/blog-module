@@ -12,11 +12,13 @@ use TechStudio\Core\app\Models\UserProfile;
 use TechStudio\Blog\app\Services\Article\ArticleService;
 use TechStudio\Core\app\Services\Category\CategoryService;
 use TechStudio\Core\app\Services\File\FileService;
+use TechStudio\Core\app\Models\Traits\taggeable;
 use TechStudio\Core\app\Helper\ArrayPaginate;
 use TechStudio\Core\app\Models\Alias;
 use TechStudio\Core\app\Helper\HtmlContent;
 use TechStudio\Core\app\Helper\SlugGenerator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\App;
 
 
 
@@ -70,9 +72,10 @@ class ArticleController extends Controller
 
     public function getArticle($slug)
     {
-
+        $language = App::currentLocale();
         $slug = request()->slug;
-        $getArticle = Article::where('slug', $slug)->firstOrFail();
+        $getArticle = Article::where('slug', $slug)->where('language', $language)->first();
+
         return $this->articleService->getArticle($getArticle);
     }
 
@@ -105,9 +108,11 @@ class ArticleController extends Controller
 
     public function storeFeedback($slug,Request $request)
     {
+        $language = App::currentLocale(); 
+
         $slug = request()->slug;
         
-        $slug = Article::where('slug', $slug)->firstOrFail();
+        $slug = Article::where('slug', $slug)->where('language', $language)->firstOrFail();
 
         
         if (!$request->has('action') || !in_array($request->action,['clear', 'like', 'dislike'])){
@@ -126,15 +131,17 @@ class ArticleController extends Controller
 
     public function articlesByCategoryCommon($slug)
     {
+        $language = App::currentLocale(); 
         $slug = request()->slug;
-        $getCategory = Category::where('slug', $slug)->firstOrFail();
-        return  $this->articleService->getFirstArticleByCategory($getCategory);
+        return  $this->articleService->getFirstArticleByCategory($slug);
     }
 
     public function storeBookmark($slug,Request $request)
     {
+        $language = App::currentLocale(); 
+
         $slug = request()->slug;
-        $slug = Article::where('slug', $slug)->firstOrFail();
+        $slug = Article::where('slug', $slug)->where('language', $language)->firstOrFail();
 
         if (!$request->has('action') || !in_array($request->action,['save','clear'])){
             throw new BadRequestException("'action' request data field must be either of [clear, save]."); // improve validation
@@ -156,7 +163,9 @@ class ArticleController extends Controller
 
     public function getEditorCommon(Request $request)
     {
-        $categories = Category::where('table_type','TechStudio\Blog\app\Models\Article')->get()->map(function ($category) {
+        $language = App::currentLocale(); 
+
+        $categories = Category::where('table_type','TechStudio\Blog\app\Models\Article')->where('language', $language)->get()->map(function ($category) {
             return [
                 'title' => $category->title,
                 'slug' => $category->slug,
@@ -179,7 +188,9 @@ class ArticleController extends Controller
 
     public function getEditorData($local, $id)
     {
-        $article = Article::with('tags', 'author')->where('id', $id)->firstOrFail();
+        $language = App::currentLocale(); 
+
+        $article = Article::with('tags', 'author')->where('id', $id)->where('language', $language)->firstOrFail();
 
         if ($article->author_type == 'TechStudio\\Core\\app\\Models\\Alias') {
             $article->author_type = 'alias';
@@ -229,10 +240,12 @@ class ArticleController extends Controller
     
     public function updateEditorData(Request $request)
     {
+        $language = App::currentLocale(); 
+
         $data = $request;
 
         if ($data['id']) {
-            $article = Article::where('id', $request->id)->firstOrFail();
+            $article = Article::where('id', $request->id)->where('language', $language)->firstOrFail();
         } else {
             $article = new Article;
             $article->status = 'draft';
@@ -264,22 +277,39 @@ class ArticleController extends Controller
         $article->category()->associate($category);
 
         //ToDo tags AmirMahdi
-        if ($data['tags']) {
+        // if ($data['tags']) {
+        //     $tagArray = [];
+        //     foreach ($data['tags'] as $tag) {
+        //         array_push($tagArray, $tag);
+        //     }
+        //     $tags = Tag::whereIn('slug', $tagArray)->get();
+        
+        //     // Check if all tags are found
+        //     if (count($tags) !== count($data['tags'])) {
+        //         $e = new ModelNotFoundException;
+        //         $e->setModel(Tag::class);
+        //         throw $e;
+        //     }
+        
+        //     $tagIds = $tags->pluck('id')->toArray();
+        //     $article->tags()->sync($tagIds);
+        // }
+        if (is_array($data['tags'])) {
             $tagArray = [];
+        
             foreach ($data['tags'] as $tag) {
                 array_push($tagArray, $tag);
             }
+        
             $tags = Tag::whereIn('slug', $tagArray)->get();
         
-            // Check if all tags are found
-            if (count($tags) !== count($data['tags'])) {
+            if (count($tags) < count($data['tags'])) {
                 $e = new ModelNotFoundException;
                 $e->setModel(Tag::class);
                 throw $e;
             }
-        
-            $tagIds = $tags->pluck('id')->toArray();
-            $article->tags()->sync($tagIds);
+                
+            $article->tags()->sync($tags->pluck('id'));
         }
     
         $article->content = $data['content'] ?? [];
@@ -299,7 +329,9 @@ class ArticleController extends Controller
     public function getArticleListData(Request $request)
     {
 
-        $query = Article::with('author', 'comments', 'category');
+        $language = App::currentLocale(); 
+
+        $query = Article::where('language', $language)->with('author', 'comments', 'category');
 
         if ($request->filled('search')) {
             $txt = $request->get('search');
@@ -398,10 +430,11 @@ class ArticleController extends Controller
 
     public function getArticleListCommon(Request $request)
     {
-        // ToDo Core
+
+        $language = App::currentLocale(); 
         $id = Auth::user()->id;
 
-        $category = Category::where('table_type','App\Models\Article')->get();
+        $category = Category::where('table_type','App\Models\Article')->where('language', $language)->get();
 
         $counts = [
             'all' => Article::whereNot('status', 'deleted')->count(),
@@ -422,7 +455,6 @@ class ArticleController extends Controller
         $data = [
             'counts' => $counts,
             'categories' => $categories,
-            // ToDo Core
             'authors' => $this->authors(),
             // If a status is added, it should be added here TODO
             'status' => [
@@ -439,6 +471,7 @@ class ArticleController extends Controller
 
     public function updateArticlesStatus($local, Article $article, Request $request)
     {
+        $language = App::currentLocale(); 
 
         $validatedData = $request->validate([
             'status' => 'required|in:published,hidden,deleted,draft',
@@ -449,7 +482,7 @@ class ArticleController extends Controller
 
         if ($validatedData['status'] == 'published') {
             $date = Carbon::now()->toDateTimeString();
-            $articles = $article->whereIn('id', $ids)->get();
+            $articles = $article->whereIn('id', $ids)->where('language', $language)->get();
 
             foreach ($articles as $article) {
 

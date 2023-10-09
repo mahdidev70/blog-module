@@ -21,8 +21,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Article extends Model
 {
-    use HasFactory, taggeable, Bookmarkable, Likeable;
-    // Likeable;
+    use HasFactory, Bookmarkable, Likeable, taggeable;
 
     protected $table = 'blog_articles';
 
@@ -80,7 +79,6 @@ class Article extends Model
     
     public function updateSummary()
     {
-        return 'dsafdsfa';
         foreach ($this->content as $item) {
             if ($item['type'] == 'html') {
                 try{
