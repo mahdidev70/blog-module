@@ -27,8 +27,8 @@ class ArticleService
             ->get()
             ->map(function ($article) {
                 $article->author = [
-                    "displayName" => 'دیجی‌کالا',
-                    "avatarUrl" => 'https://storage.sa-test.techstudio.diginext.ir/static/digikala.png',
+                    "displayName" => 'DigiNext',
+                    "avatarUrl" => 'https://static.eseminar.tv/public/upload/host/1657984955_28.jpg',
                     "id" => 45,
                 ];  // TODO: replace with user display name
                 return $article;
@@ -119,8 +119,8 @@ class ArticleService
                 'publicationDate' =>$article->publicationDate,
                 'summary' =>$article->summary,
                 'author' => [
-                    "displayName" => 'دیجی‌کالا',
-                    "avatarUrl" => 'https://storage.sa-test.techstudio.diginext.ir/static/digikala.png',
+                    "displayName" => 'DigiNext',
+                    "avatarUrl" => 'https://static.eseminar.tv/public/upload/host/1657984955_28.jpg',
                     "id" => 45,
                 ],  // TODO: replace with user display name
                 'category' => $category,
@@ -161,8 +161,8 @@ class ArticleService
             'relevantContentCards' => $this->getRelevantContentCards($article),
             'tags' => $tags,
             'author' => [
-                "displayName" => 'دیجی‌کالا',
-                "avatarUrl" => 'https://storage.sa-test.techstudio.diginext.ir/static/digikala.png',
+                "displayName" => 'DigiNext',
+                "avatarUrl" => 'https://static.eseminar.tv/public/upload/host/1657984955_28.jpg',
                 "id" => 28,
             ],  // TODO: replace with user display name
             "minutesToRead" => $article->minutesToRead(),
@@ -196,8 +196,8 @@ class ArticleService
                 "title" => $a->category ? $a->category->title : 'بدون دسته‌بندی',
             ],
             'author' => [
-                "displayName" => 'دیجی‌کالا',
-                "avatarUrl" => 'https://storage.sa-test.techstudio.diginext.ir/static/digikala.png',
+                "displayName" => 'DigiNext',
+                "avatarUrl" => 'https://static.eseminar.tv/public/upload/host/1657984955_28.jpg',
                 "id" => 28,
             ],  // TODO: replace with user display name
         ]);
@@ -215,8 +215,8 @@ class ArticleService
             'slug' => $a->slug,
             'summary' => $a->getSummary(),
             'author' => [
-                "displayName" => 'دیجی‌کالا',
-                "avatarUrl" => 'https://storage.sa-test.techstudio.diginext.ir/static/digikala.png',
+                "displayName" => 'DigiNext',
+                "avatarUrl" => 'https://static.eseminar.tv/public/upload/host/1657984955_28.jpg',
                 "id" => 28,
             ],  // TODO: replace with user display name
             //ToDo Amirmahdi
@@ -262,8 +262,8 @@ class ArticleService
                 'publicationDate' =>$article->publicationDate,
                 'summary' =>$article->summary,
                 'author' => [
-                    "displayName" => 'دیجی‌کالا',
-                    "avatarUrl" => 'https://storage.sa-test.techstudio.diginext.ir/static/digikala.png',
+                    "displayName" => 'DigiNext',
+                    "avatarUrl" => 'https://static.eseminar.tv/public/upload/host/1657984955_28.jpg',
                     "id" => 48,
                 ],  // TODO: replace with user display name
                 'category' => $category,
