@@ -26,34 +26,34 @@ use Illuminate\Support\Facades\Config;
     // ============ CLIENT SIDE ===============
     Route::prefix('articles')->group(function () {
 
-        // Route::get('/archive/common', [ArticleController::class, 'articlesArchiveCommon']); //=> Done
-        // Route::get('/archive/list', [ArticleController::class, 'listArticles']); //=> Done
-        // Route::get('/section/common', [ArticleController::class, 'articlesSectionCommon']); //=> Done
-        // Route::get('/category/{slug}/common', [ArticleController::class, 'articlesByCategoryCommon']); //=> Done
+        Route::get('/archive/common', [ArticleController::class, 'articlesArchiveCommon']); //=> Done
+        Route::get('/archive/list', [ArticleController::class, 'listArticles']); //=> Done
+        Route::get('/section/common', [ArticleController::class, 'articlesSectionCommon']); //=> Done
+        Route::get('/category/{slug}/common', [ArticleController::class, 'articlesByCategoryCommon']); //=> Done
         
     });
 
     Route::prefix('home')->group(function() {
         
-        // Route::get('/common', [BlogHomeController::class, 'getHomeCommon']); //=> Done
-        // Route::get('/data', [BlogHomeController::class, 'getHomeData']); //=> Done
+        Route::get('/common', [BlogHomeController::class, 'getHomeCommon']); //=> Done
+        Route::get('/data', [BlogHomeController::class, 'getHomeData']); //=> Done
         
     });
 
     Route::middleware('login_optional')->prefix('article')->group(function() {
         
-        // Route::get('/{slug}/comments', [CommentController::class, 'getComments']);
-        // Route::get('/{slug}', [ArticleController::class, 'getArticle']); 
+        Route::get('/{slug}/comments', [CommentController::class, 'getComments']);
+        Route::get('/{slug}', [ArticleController::class, 'getArticle']); 
     });
 
     Route::middleware('login_required')->group(function () {
         
         if (Config::get('flags.community')) {
             Route::prefix('article/{slug}')->group(function() {
-                // Route::post('/bookmark', [ArticleController::class, 'storeBookmark']);
-                // Route::post('/feedback', [ArticleController::class, 'storeFeedback']);
-                // Route::post('/comments', [CommentController::class, 'store']);
-                // Route::post('/comments/{id}/feedback', [CommentController::class, 'storeFeedback']);
+                Route::post('/bookmark', [ArticleController::class, 'storeBookmark']);
+                Route::post('/feedback', [ArticleController::class, 'storeFeedback']);
+                Route::post('/comments', [CommentController::class, 'store']);
+                Route::post('/comments/{id}/feedback', [CommentController::class, 'storeFeedback']);
                     
             });
         };
@@ -62,7 +62,7 @@ use Illuminate\Support\Facades\Config;
         // ============= PANEL SIDE ===============
         // Route::get('/article_editor/common', [ArticleController::class, 'getEditorCommon']); // Done
         // Route::get('/article_editor/data/{id}', [ArticleController::class, 'getEditorData']); // Done
-        Route::put('/article_editor/data/', [ArticleController::class, 'updateEditorData']); 
+        // Route::put('/article_editor/data/', [ArticleController::class, 'updateEditorData']); 
 
         Route::prefix('panel')->group(function () {
         
@@ -83,8 +83,8 @@ use Illuminate\Support\Facades\Config;
             // ---- tag: ----
             // Route::post('/tags/create', [TagController::class, 'createTags']); // Done
             // Route::get('/tag/common', [TagController::class, 'getCommonListTag']); // Done
-            // Route::get('/tags/list', [TagController::class, 'listTags']);
-            // Route::put('/tags/update', [TagController::class, 'updateTags']);
+            Route::get('/tags/list', [TagController::class, 'listTags']);
+            Route::put('/tags/update', [TagController::class, 'updateTags']);
             // Route::put('/tags/set_status', [TagController::class, 'updateTagsStatus']); // Done
         
             // ---- comment: ----
