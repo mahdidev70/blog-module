@@ -83,8 +83,8 @@ use Illuminate\Support\Facades\Config;
             // ---- tag: ----
             // Route::post('/tags/create', [TagController::class, 'createTags']); // Done
             // Route::get('/tag/common', [TagController::class, 'getCommonListTag']); // Done
-            Route::get('/tags/list', [TagController::class, 'listTags']);
-            Route::put('/tags/update', [TagController::class, 'updateTags']);
+            // Route::get('/tags/list', [TagController::class, 'listTags']);
+            // Route::put('/tags/update', [TagController::class, 'updateTags']);
             // Route::put('/tags/set_status', [TagController::class, 'updateTagsStatus']); // Done
         
             // ---- comment: ----
