@@ -60,38 +60,38 @@ use Illuminate\Support\Facades\Config;
         
         
         // ============= PANEL SIDE ===============
-        // Route::get('/article_editor/common', [ArticleController::class, 'getEditorCommon']); // Done
-        // Route::get('/article_editor/data/{id}', [ArticleController::class, 'getEditorData']); // Done
+        Route::get('/article_editor/common', [ArticleController::class, 'getEditorCommon']); // Done
+        Route::get('/article_editor/ata/{id}', [ArticleController::class, 'getEditorData']); // Done
         // Route::put('/article_editor/data/', [ArticleController::class, 'updateEditorData']); 
 
         Route::prefix('panel')->group(function () {
         
             // ---- article ----
-            // Route::get('/data', [ArticleController::class, 'getArticleListData']); // Done
-            // Route::get('/articles/common', [ArticleController::class, 'getArticleListCommon']); // Done
-            // Route::put('/articles/set_status', [ArticleController::class, 'updateArticlesStatus']); // Done
+            Route::get('/data', [ArticleController::class, 'getArticleListData']); // Done
+            Route::get('/articles/common', [ArticleController::class, 'getArticleListCommon']); // Done
+            Route::put('/articles/set_status', [ArticleController::class, 'updateArticlesStatus']); // Done
             // Route::post('/articles/upload_cover', [ArticleController::class, 'uploadArticleCover']);
             // Route::post('/articles/inline_media', [ArticleController::class, 'uploadArticleContent']);
             
             // ---- category: ----
-            // Route::post('/categories/create', [CategoriesController::class, 'createCategory']); // Done
-            // Route::get('/category/common', [CategoriesController::class, 'getCommonListCategory']); // Done
-            // Route::get('/categories/list', [CategoriesController::class, 'listCategory']); // Done
-            // Route::put('/categories/update', [CategoriesController::class, 'updateCategory']); // Done
-            // Route::put('/categories/set_status', [CategoriesController::class, 'updateCategoryStatus']); // Done
+            Route::post('/categories/create', [CategoriesController::class, 'createCategory']); // Done
+            Route::get('/category/common', [CategoriesController::class, 'getCommonListCategory']); // Done
+            Route::get('/categories/list', [CategoriesController::class, 'listCategory']); // Done
+            Route::put('/categories/update', [CategoriesController::class, 'updateCategory']); // Done
+            Route::put('/categories/set_status', [CategoriesController::class, 'updateCategoryStatus']); // Done
         
             // ---- tag: ----
-            // Route::post('/tags/create', [TagController::class, 'createTags']); // Done
-            // Route::get('/tag/common', [TagController::class, 'getCommonListTag']); // Done
+            Route::post('/tags/create', [TagController::class, 'createTags']); // Done
+            Route::get('/tag/common', [TagController::class, 'getCommonListTag']); // Done
             // Route::get('/tags/list', [TagController::class, 'listTags']);
             // Route::put('/tags/update', [TagController::class, 'updateTags']);
-            // Route::put('/tags/set_status', [TagController::class, 'updateTagsStatus']); // Done
+            Route::put('/tags/set_status', [TagController::class, 'updateTagsStatus']); // Done
         
             // ---- comment: ----
-            // Route::get('/articles/comments/data', [CommentController::class, 'getArticleCommentsListData']); // Done
-            // Route::get('/articles/comments/common', [CommentController::class, 'getArticleCommentsListCommon']); // Done
-            // Route::put('/articles/comments/update', [CommentController::class, 'updateArticleCommentsStatus']); // Done
-            // Route::put('/articles/comments/{comment_id}',[CommentController::class, 'editArticleCommentText']); // Done
+            Route::get('/articles/comments/data', [CommentController::class, 'getArticleCommentsListData']); // Done
+            Route::get('/articles/comments/common', [CommentController::class, 'getArticleCommentsListCommon']); // Done
+            Route::put('/articles/comments/update', [CommentController::class, 'updateArticleCommentsStatus']); // Done
+            Route::put('/articles/comments/{comment_id}',[CommentController::class, 'editArticleCommentText']); // Done
         
         });
     });
