@@ -38,7 +38,9 @@ class BlogHomeController extends Controller
 
         $result = [
             'featuredArticles' => $this->articleService->getFeaturedArticles(),
-            'quickActionBanners' => $this->bannerService->getBannerForHomPage(),
+            // 'quickActionBanners' => $this->bannerService->getBannerForHomPage(),
+            'quickActionBanners' => [],
+
             // 'lastPodcasts' => $lastPodcasts,
             'categories' => $this->categoryService->getCategoriesForFilter(new Article()),
         ];
