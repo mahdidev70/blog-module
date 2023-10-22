@@ -2,9 +2,7 @@
 
 namespace TechStudio\Blog\app\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use Carbon\Carbon;
 use TechStudio\Core\app\Models\Category;
 use TechStudio\Core\app\Models\Tag;
 use TechStudio\Blog\app\Models\Article;
@@ -17,28 +15,19 @@ use TechStudio\Core\app\Helper\ArrayPaginate;
 use TechStudio\Core\app\Models\Alias;
 use TechStudio\Core\app\Helper\HtmlContent;
 use TechStudio\Core\app\Helper\SlugGenerator;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\App;
+use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Validator;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
+use Carbon\Carbon;
 
-
-
-// ====== Done : ========
-// use App\Services\Article\ArticleService;
-// use App\Models\Category;
-// use App\Models\Article;
-// use App\Models\Tag;
 
 
 // ===== not done : =====
-// use App\Helper\SlugGenerator;
-// use App\Models\Alias;
 // use App\Models\Bookmark;
-// use App\Services\Category\CategoryService;
-// use App\Services\File\FileService;
-use Illuminate\Database\Eloquent\ModelNotFoundException;
 // use Illuminate\Validation\ValidationException;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
-use Illuminate\Support\Facades\Validator;
 
 // use App\Helper\HtmlContent;
 
@@ -163,9 +152,11 @@ class ArticleController extends Controller
 
     public function getEditorCommon(Request $request)
     {
-        $language = App::currentLocale(); 
+        $article = new Article();
 
-        $categories = Category::where('table_type','TechStudio\Blog\app\Models\Article')->where('language', $language)->get()->map(function ($category) {
+        $language = App::currentLocale();
+
+        $categories = Category::where('table_type', get_class($article))->where('language', $language)->get()->map(function ($category) {
             return [
                 'title' => $category->title,
                 'slug' => $category->slug,
@@ -341,6 +332,9 @@ class ArticleController extends Controller
             });
         }
 
+        $user = new UserProfile();
+        $alias = new Alias();
+
         //Filtering
         if (isset($request->authorId) && $request->authorId != null ) {
             $query->where('author_id', $request->input('authorId'));
@@ -348,9 +342,9 @@ class ArticleController extends Controller
 
         if (isset($request->authorType) && $request->authorType != null) {
             if ($request->authorType == 'user') {
-                $query->where('author_type', 'App\Models\UserProfile');
+                $query->where('author_type', get_class($user));
             }elseif ($request->authorType == 'alias') {
-                $query->where('author_type', 'App\Models\Alias');
+                $query->where('author_type', get_class($alias));
             }
         }
 
@@ -434,7 +428,9 @@ class ArticleController extends Controller
         $language = App::currentLocale(); 
         $id = Auth::user()->id;
 
-        $category = Category::where('table_type','App\Models\Article')->where('language', $language)->get();
+        $article = new Article();
+
+        $category = Category::where('table_type', get_class($article))->where('language', $language)->get();
 
         $counts = [
             'all' => Article::whereNot('status', 'deleted')->count(),
