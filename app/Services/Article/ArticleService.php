@@ -11,34 +11,51 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\ConnectionException;
 use TechStudio\Core\app\Models\Category;
+use TechStudio\Core\app\Models\UserProfile;
 
 // TODO: Needs cleanup/refactor
 
 class ArticleService
 {
+    public function getAuthor(UserProfile $user)
+    {
+       return [
+            "displayName" => $user->getDisplayName(),
+            "avatarUrl" => $user->avatar_url,
+            "id" => $user->id,
+        ];
+    }
 
     public function getFeaturedArticles()
     {
         $language = App::currentLocale();
 
-        return Article::where('language', $language)->select(['slug', 'title', 'bannerUrl', 'publicationDate', 'summary'])
+        return Article::where('language', $language)->select(['slug', 'title', 'bannerUrl', 'publicationDate', 'summary', 'author_id'])
+            ->with('author')
             ->orderBy('publicationDate', 'DESC')
             ->take(4)
             ->get()
             ->map(function ($article) {
-                $article->author = [
-                    "displayName" => 'DigiNext',
-                    "avatarUrl" => 'https://static.eseminar.tv/public/upload/host/1657984955_28.jpg',
-                    "id" => 45,
-                ];  // TODO: replace with user display name
+                $article->author = $this->getAuthor($article->author);
+                return $article;
+        });
+    }
+
+    public function getRecentPodcasts()
+    {
+        return Article::where('type', 'podcast')
+            ->select(['slug', 'title', 'bannerUrl', 'publicationDate', 'summary','author_id'])
+            ->orderBy('publicationDate', 'DESC')
+            ->take(15)
+            ->get()
+            ->map(function ($article) {
+                $article->author = $this->getAuthor($article->author);
                 return $article;
             });
     }
 
-    public function getArticles($slug=null,$request=null) {
-        // if ($slug){
-        //     return Section::where('slug',$slug)->first()->expand();
-        // }
+    public function getArticles($slug=null,$request=null) 
+    {
         $language = App::currentLocale();
 
         $articlesQuery = Article::query()->where('language', $language)->with(['tags']);
@@ -94,7 +111,7 @@ class ArticleService
     public function generateResponse($articlesQuery)
     {
         return $articlesQuery->through(function($article) {
-            $article->summary = $article->getSummary();  // error
+            $article->summary = $article->getSummary();
             $category= [
                 'title' => 'دسته بندی نشده',
                 'slug' => null,
@@ -118,24 +135,20 @@ class ArticleService
                 'bannerUrl' =>$article->bannerUrl,
                 'publicationDate' =>$article->publicationDate,
                 'summary' =>$article->summary,
-                'author' => [
-                    "displayName" => 'DigiNext',
-                    "avatarUrl" => 'https://static.eseminar.tv/public/upload/host/1657984955_28.jpg',
-                    "id" => 45,
-                ],  // TODO: replace with user display name
+                'author' => $this->getAuthor($article->author),
                 'category' => $category,
                 'tags' => $tags,
                 "minutesToRead" => $article->minutesToRead(),
+                "information" => $article->information,
+                'type' => $article->type,
 
             ];
         });
     }
-    // public function getArticlesNavbar() {
-    //     return Section::where('slug', 'homepage')->first()->toNavbar();
-    // }
 
     public function getArticle($article)
     {
+        $article = $article->with('author')->firstOrFail();
 
         if (!is_null($article->tags)){
             $tags = $article->tags->map(fn ($tag) => [
@@ -145,61 +158,58 @@ class ArticleService
         }else{
             $tags = null;
         }
+
+        $relatedModel = new Article();
         $article->increment('viewsCount');
         $user_id = Auth::user()?->id;
+
         return [
             'title' => $article->title,
             'publicationDate' => $article->publicationDate,
             'likesCount' => $article->likes_count??0,
-            //ToDo AmirMahdi,
-            // 'currentUserLiked' => $user_id && (bool)$article->isLikedBy($user_id),
-            // 'currentUserBookmarked' => $user_id && (bool)$article->isSavedBy($user_id),
+            'currentUserLiked' => $user_id && (bool)$article->isLikedBy($user_id),
+            'currentUserBookmarked' => $user_id && (bool)$article->isSavedBy($user_id),
             'viewsCount' => $article->viewsCount,
             'bannerUrl' => $article->bannerUrl,
             'content' => $article->content,
-            // 'summary' => $article->getSummary(),
-            'relevantContentCards' => $this->getRelevantContentCards($article),
+            'summary' => $article->getSummary(),
+            'relevantContentCards' => $this->getRelevantContentCards($article, $relatedModel),
             'tags' => $tags,
-            'author' => [
-                "displayName" => 'DigiNext',
-                "avatarUrl" => 'https://static.eseminar.tv/public/upload/host/1657984955_28.jpg',
-                "id" => 28,
-            ],  // TODO: replace with user display name
+            'author' => $this->getAuthor($article->author),
             "minutesToRead" => $article->minutesToRead(),
+            'information' => json_decode($article->information),
         ];
-
     }
     
-    public function getRelevantContentCards(Article $article) {
+    public function getRelevantContentCards($model, $relatedModel) 
+    {
         $relevantArticlesIds = null;
         try {
-            $response = Http::timeout(1)->get("http://recommendation:5600/" . $article->id)->json();
+            $response = Http::timeout(1)->get("http://recommendation:5600/" . $relatedModel->id)->json();
             $relevantArticlesIds = $response["similar_articles"];
-            $relevantArticles = Article::with('category')->orderByDesc('publicationDate')->whereIn('id', $relevantArticlesIds)->limit(3)->get();
+            $relevantArticles = $model::with('category')->orderByDesc('publicationDate')->whereIn('id', $relevantArticlesIds)->limit(3)->get();
             if (count($relevantArticles) == 0) {
                 throw new \Exception('Received empty list from recommendation system.');
             }
         } catch (\Exception $e) {
             \Log::warning('Recommendation system error. Reason: ' . $e);
-            $relevantArticles = Article::with('category')->orderByDesc('publicationDate')->take(3)->get();
+            $relevantArticles = $model::with('category')->inRandomOrder()->take(3)->get();
         }
+
         return $relevantArticles->map(fn ($a) => [
             'bannerUrl' => $a->bannerUrl,
+            'bannerUrlPodcast' => $a->banner_url,
             'publicationDate' => $a->publicationDate,
             'title' => $a->title,
-            'summary' => $a->getSummary(),
+            'summary' => method_exists($a, 'getSummary') ? $a->getSummary() : '',
             'slug' => $a->slug,
-            'type' => 'article',
-            "minutesToRead" => $a->minutesToRead(),
+            'type' => $model instanceof \App\Models\Article ? 'article' : 'podcast',
+            "minutesToRead" => method_exists($a, 'minutesToRead') ? $a->minutesToRead() : '',
             'category' => [
                 "slug" => $a->category ? $a->category->slug : 'no-category',
                 "title" => $a->category ? $a->category->title : 'بدون دسته‌بندی',
             ],
-            'author' => [
-                "displayName" => 'DigiNext',
-                "avatarUrl" => 'https://static.eseminar.tv/public/upload/host/1657984955_28.jpg',
-                "id" => 28,
-            ],  // TODO: replace with user display name
+            'author' => $this->getAuthor($a->author),
         ]);
     }
 
@@ -214,25 +224,16 @@ class ArticleService
             'title' => $a->title,
             'slug' => $a->slug,
             'summary' => $a->getSummary(),
-            'author' => [
-                "displayName" => 'DigiNext',
-                "avatarUrl" => 'https://static.eseminar.tv/public/upload/host/1657984955_28.jpg',
-                "id" => 28,
-            ],  // TODO: replace with user display name
-            //ToDo Amirmahdi
-            // 'tags' => $a->tags->map(fn ($tag) => [
-            //     'slug' => $tag->slug,
-            //     'title' => $tag->title,
-            // ])
+            'author' => $this->getAuthor($a->author),
+            'tags' => $a->tags->map(fn ($tag) => [
+                'slug' => $tag->slug,
+                'title' => $tag->title,
+            ])
         ]);
     }
 
     public function getFirstArticleByCategory($category)
     {
-        $language = App::currentLocale();
-        
-        $category = Category::where('slug', $category)->where('language', $language)->whereNull('deleted_at')->firstOrFail();
-
         $categoryTitle = $category->title;
         $article = Article::where('category_id',$category->id)->latest('id')->first();
         $article->summary = $article->getSummary();  // error
@@ -252,26 +253,21 @@ class ArticleService
             'title' => $tag?->title,
         ]);
 
-            return [
-                'title' => $categoryTitle ,
-                'featuredArticle' =>[
-                'id' =>$article->id,
-                'title' =>$article->title,
-                'slug' =>$article->slug,
-                'bannerUrl' =>$article->bannerUrl,
-                'publicationDate' =>$article->publicationDate,
-                'summary' =>$article->summary,
-                'author' => [
-                    "displayName" => 'DigiNext',
-                    "avatarUrl" => 'https://static.eseminar.tv/public/upload/host/1657984955_28.jpg',
-                    "id" => 48,
-                ],  // TODO: replace with user display name
-                'category' => $category,
-                'tags' => $tags,
-                "minutesToRead" => $article->minutesToRead(),
+        return [
+            'title' => $categoryTitle ,
+            'featuredArticle' =>[
+            'id' =>$article->id,
+            'title' =>$article->title,
+            'slug' =>$article->slug,
+            'bannerUrl' =>$article->bannerUrl,
+            'publicationDate' =>$article->publicationDate,
+            'summary' =>$article->summary,
+            'author' => $this->getAuthor($article->author),
+            'category' => $category,
+            'tags' => $tags,
+            "minutesToRead" => $article->minutesToRead(),
+            'information' => $article->information,
             ],
-            ];
-
-
+        ];
     }
 }

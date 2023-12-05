@@ -14,7 +14,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('blog_articles', function (Blueprint $table) {
-            $table->string('language')->after('publicationDate')->default('fa');
+            $table->json('information')->nullable()->after('publicationDate');
+            $table->enum('type', ['podcast', 'article'])->default('article')->after('information');
         });
     }
 
@@ -24,7 +25,8 @@ return new class extends Migration
     public function down(): void
     {
         Schema::table('blog_articles', function (Blueprint $table) {
-            $table->dropColumn('language');
+            $table->dropColumn('information');
+            $table->dropColumn('type');
         });
     }
 };

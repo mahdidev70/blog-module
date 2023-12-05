@@ -1,5 +1,7 @@
 <?php
 
+namespace TechStudio\Blog\database\Migrations;
+
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;

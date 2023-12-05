@@ -18,31 +18,24 @@ class BlogHomeController extends Controller
     public function __construct(protected ArticleService $articleService, protected CategoryService $categoryService
                                 ,protected BannerService $bannerService)
     { }
-    // public function getHomepage() {
+    public function getHomepage() {
     //     /*$articles = $this->articleService->getFeaturedArticles();*/
-    //    $result =  [
-    //           'featuredArticles' => $this->articleService->getFeaturedArticles(),
-    //           'latestVideos' => $this->videoService->getLatestVideos(),
-    //           'articles' => $this->articleService->getArticles('homepage'),
-    //           'articlesNavbar' => $this->articleService->getArticlesNavbar(),
-    //     ];
-    //     return response()->json( $result,200);
-    // }
+       $result =  [
+              'featuredArticles' => $this->articleService->getFeaturedArticles(),
+              'latestVideos' => $this->videoService->getLatestVideos(),
+              'articles' => $this->articleService->getArticles('homepage'),
+              'articlesNavbar' => $this->articleService->getArticlesNavbar(),
+        ];
+        return response()->json( $result,200);
+    }
 
     public function getHomeCommon()
     {
-        // $lastPodcasts = Podcast::where('status','published')->select(['slug', 'title', 'banner_url', 'publicationDate', 'sound'])
-        //     ->orderBy('publicationDate', 'DESC')
-        //     ->take(12)
-        //     ->get();
-
         $result = [
             'featuredArticles' => $this->articleService->getFeaturedArticles(),
-            // 'quickActionBanners' => $this->bannerService->getBannerForHomPage(),
-            'quickActionBanners' => [],
-
-            // 'lastPodcasts' => $lastPodcasts,
+            'quickActionBanners' => $this->bannerService->getBannerForHomPage(),
             'categories' => $this->categoryService->getCategoriesForFilter(new Article()),
+            'recentPodcasts' => $this->articleService->getRecentPodcasts()
         ];
         return response()->json( $result,200);
     }

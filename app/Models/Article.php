@@ -18,6 +18,7 @@ use \Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use TechStudio\Core\app\Models\UserProfile;
 
 class Article extends Model
 {
@@ -40,6 +41,18 @@ class Article extends Model
                 $builder->where('status', 'published');
             });
         }
+
+        $request = request();
+        $excludedRoutes = ['api/home/common'];
+
+        if (!in_array($request->path(), $excludedRoutes)) {
+            static::addGlobalScope('postType', function (Builder $builder) use ($request) {
+                $builder->when($request->has('type'), function ($query) use ($request) {
+                    $query->where('type', $request->get('type'));
+                });
+            });
+        
+        }
     }
 
     public function getRouteKeyName()
@@ -49,7 +62,7 @@ class Article extends Model
 
     public function author()
     {
-        return $this->morphTo();
+        return $this->belongsTo(UserProfile::class);
     }
 
     // // TODO check (remove?)
