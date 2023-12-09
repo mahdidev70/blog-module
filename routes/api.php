@@ -37,15 +37,15 @@ use Illuminate\Support\Facades\Config;
         
     });
 
+    Route::prefix('article')->group(function() {
+        
+        Route::get('/{slug}/comments', [CommentController::class, 'getComments']); //=> Done
+        Route::get('/{slug}', [ArticleController::class, 'getArticle']); //=> Done
+
+    });
     
     Route::middleware('auth:sanctum')->group(function () {
 
-        Route::prefix('article')->group(function() {
-            
-            Route::get('/{slug}/comments', [CommentController::class, 'getComments']); //=> Done
-            Route::get('/{slug}', [ArticleController::class, 'getArticle']); //=> Done
-    
-        });
         
         Route::prefix('article/{slug}')->group(function() {
             
