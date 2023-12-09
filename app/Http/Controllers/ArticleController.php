@@ -312,13 +312,20 @@ class ArticleController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        if ($request->has('sort')) {
-            if ($request->sort == 'bookmarks') {
-                $query->withCount('bookmarks')->orderByDesc('bookmarks_count');
-            } elseif ($request->sort == 'views') {
-                $query->orderByDesc('viewsCount');
-            } elseif ($request->sort == 'comments') {
-                $query->withCount('comments')->orderByDesc('comments_count');
+        $sortOrder= 'desc';
+        if (isset($request->sortOrder) && ($request->sortOrder ==  'asc' || $request->sortOrder ==  'desc')) {
+            $sortOrder = $request->sortOrder;
+        }
+
+        if ($request->has('sortKey')) {
+            if ($request->sortKey == 'lastUpdate') {
+                $query->orderBy('updated_at', $sortOrder);
+            }elseif ($request->sortKey == 'bookmarks') {
+                $query->withCount('bookmarks')->orderBy('bookmarks_count', $sortOrder);
+            } elseif ($request->sortKey == 'views') {
+                $query->orderBy('viewsCount', $sortOrder);
+            } elseif ($request->sortKey == 'comments') {
+                $query->withCount('comments')->orderBy('comments_count', $sortOrder);
             }
         }
 
