@@ -101,7 +101,6 @@ class ArticleController extends Controller
         }
 
         $currentUserAction = $request->action;
-
         if ($request->action == 'clear'){
             $slug->clearBookmarkBy(Auth::user()->id);
         }else{
