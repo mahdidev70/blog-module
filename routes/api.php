@@ -27,7 +27,9 @@ use Illuminate\Support\Facades\Config;
         Route::get('/archive/common', [ArticleController::class, 'articlesArchiveCommon']); //=> Done
         Route::get('/archive/list', [ArticleController::class, 'listArticles']); //=> Done
         Route::get('/category/{slug}/common', [ArticleController::class, 'articlesByCategoryCommon']); //=> Done
-        
+        // Route::get('tag/{slug}/common', [ArticleController::class, 'articlesByCategoryCommon']);
+        Route::get('find/list', [ArticleController::class, 'findArticleList']); //Done
+
     });
 
     Route::prefix('home')->group(function() {
