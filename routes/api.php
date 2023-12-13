@@ -71,11 +71,15 @@ use Illuminate\Support\Facades\Config;
         Route::prefix('panel')->group(function () {
         
             // ---- article ----
-            Route::get('/data', [ArticleController::class, 'getArticleListData']); //=> Done
-            Route::get('/articles/common', [ArticleController::class, 'getArticleListCommon']); //=> Done
-            Route::put('/articles/set_status', [ArticleController::class, 'updateArticlesStatus']); //=> Done
-            Route::post('/articles/upload_cover', [ArticleController::class, 'uploadArticleCover']);
-            Route::post('/articles/inline_media', [ArticleController::class, 'uploadArticleContent']);
+            Route::prefix('/articles')->group(function () {
+                
+                Route::get('/data', [ArticleController::class, 'getArticleListData']); //=> Done
+                Route::get('/common', [ArticleController::class, 'getArticleListCommon']); //=> Done
+                Route::put('/set_status', [ArticleController::class, 'updateArticlesStatus']); //=> Done
+                Route::post('/upload_cover', [ArticleController::class, 'uploadArticleCover']);
+                Route::post('/inline_media', [ArticleController::class, 'uploadArticleContent']);
+
+            });
             
             // ---- category ----
             Route::get('/category/common', [CategoriesController::class, 'getCommonListCategory']); //=> Done
