@@ -22,6 +22,7 @@ use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Carbon\Carbon;
 use TechStudio\Blog\app\Http\Resources\ArticleResource;
+use TechStudio\Core\app\Models\Bookmark;
 
 // ===== not done : =====
 // use App\Models\Bookmark;
@@ -496,4 +497,20 @@ class ArticleController extends Controller
         return response()->json(ArticleResource::collection($articles));
     }
 
+    public function getUserArticle() 
+    {
+        $user = Auth::user();
+        $articleModle = new Article();
+
+        $myArticles = Article::where('author_id', $user->id)->get();
+
+        $bookmarks = Bookmark::where('bookmarkable_type', get_class($articleModle))
+            ->where('user_id', $user->id)->pluck('bookmarkable_id');
+        $articleBookmarks = Article::whereIn('id', $bookmarks)->get();
+            
+        return [
+            'myArticle' => ArticleResource::collection($myArticles),
+            'bookmarkArticle' => ArticleResource::collection($articleBookmarks),
+        ];
+    }
 }
