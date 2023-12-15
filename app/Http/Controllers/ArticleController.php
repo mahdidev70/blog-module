@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Validator;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Carbon\Carbon;
+use TechStudio\Blog\app\Http\Requests\UploadFileRequest;
+use TechStudio\Blog\app\Http\Requests\UploadImageFileRequest;
 use TechStudio\Blog\app\Http\Resources\ArticleResource;
 use TechStudio\Core\app\Models\Bookmark;
 
@@ -462,7 +464,7 @@ class ArticleController extends Controller
         ];
     }
 
-    public function uploadArticleCover(Request $request)
+    public function uploadArticleCover(UploadImageFileRequest $request)
     {
         $createdFiles = $this->fileService->upload(
             $request,
@@ -475,7 +477,7 @@ class ArticleController extends Controller
         return response()->json($createdFiles);
     }
 
-    public function uploadArticleContent(Request $request)
+    public function uploadArticleContent(UploadFileRequest $request)
     {
         $createdFiles = $this->fileService->upload(
             $request,
