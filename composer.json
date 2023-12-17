@@ -11,5 +11,13 @@
             "name": "MahdiSamian"
         }
     ],
+    "extra": {
+    "laravel": {
+        "providers": [
+            "TechStudio\\Blog\\app\\Providers\\BlogServiceProvider",
+            "TechStudio\\Blog\\app\\Providers\\BlogRouteServiceProvider",
+        ]
+    }
+},
     "require": {}
 }
