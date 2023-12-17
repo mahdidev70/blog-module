@@ -11,13 +11,12 @@
             "name": "MahdiSamian"
         }
     ],
-    "extra": {
-    "laravel": {
-        "providers": [
-            "TechStudio\\Blog\\app\\Providers\\BlogServiceProvider",
-            "TechStudio\\Blog\\app\\Providers\\BlogRouteServiceProvider",
-        ]
-    }
-},
+        "extra": {
+        "laravel": {
+            "providers": [
+                "TechStudio\\Blog\\app\Providers\\app\\Providers\\BlogRouteServiceProvider"
+            ]
+        }
+    },
     "require": {}
 }
