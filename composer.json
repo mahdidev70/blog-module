@@ -14,7 +14,7 @@
         "extra": {
         "laravel": {
             "providers": [
-                "TechStudio\\Blog\\app\Providers\\app\\Providers\\BlogRouteServiceProvider"
+                "TechStudio\\Blog\\app\\Providers\\BlogRouteServiceProvider"
             ]
         }
     },
