@@ -1,0 +1,15 @@
+{
+    "name": "tech-studio/blog-module",
+    "type": "library",
+    "autoload": {
+        "psr-4": {
+            "TechStudio\\Blog\\": "/"
+        }
+    },
+    "authors": [
+        {
+            "name": "MahdiSamian"
+        }
+    ],
+    "require": {}
+}
