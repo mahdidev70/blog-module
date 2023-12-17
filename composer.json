@@ -11,10 +11,11 @@
             "name": "MahdiSamian"
         }
     ],
-        "extra": {
+    "extra": {
         "laravel": {
             "providers": [
-                "TechStudio\\Blog\\app\\Providers\\BlogRouteServiceProvider"
+                "TechStudio\\Blog\\app\\Providers\\BlogRouteServiceProvider",
+                "TechStudio\\Blog\\app\\Providers\\BlogServiceProvider"
             ]
         }
     },
