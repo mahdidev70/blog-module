@@ -184,16 +184,16 @@ class ArticleService
     public function getRelevantContentCards($model, $relatedModel) 
     {
         $relevantArticlesIds = null;
+        
         try {
             $response = Http::timeout(1)->get("http://recommendation:5600/" . $relatedModel->id)->json();
-            $relevantArticlesIds = $response["similar_articles"];
+            $relevantArticlesIds = $response?$response["similar_articles"]:[];
             $relevantArticles = $model::with('category')->orderByDesc('publicationDate')->whereIn('id', $relevantArticlesIds)->limit(3)->get();
             if (count($relevantArticles) == 0) {
-                throw new \Exception('Received empty list from recommendation system.');
+                $relevantArticles = $model::with('category')->inRandomOrder()->take(3)->get();
             }
         } catch (\Exception $e) {
             \Log::warning('Recommendation system error. Reason: ' . $e);
-            $relevantArticles = $model::with('category')->inRandomOrder()->take(3)->get();
         }
 
         return $relevantArticles->map(fn ($a) => [
