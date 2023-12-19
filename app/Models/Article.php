@@ -36,7 +36,7 @@ class Article extends Model
     {
         parent::boot();
 
-        if (!request()->is(['api/article_editor/*', 'api/panel/*'])) {
+        if (!request()->is(['*/api/article_editor/*', '*/api/panel/*'])) {
             static::addGlobalScope('publiclyVisible', function (Builder $builder) {
                 $builder->where('status', 'published');
             });
