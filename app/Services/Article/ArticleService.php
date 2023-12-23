@@ -184,26 +184,24 @@ class ArticleService
     public function getRelevantContentCards($model, $relatedModel) 
     {
         $relevantArticlesIds = null;
-        
+        $relevantArticles = [];
+
         try {
             $response = Http::timeout(1)->get("http://recommendation:5600/" . $relatedModel->id)->json();
             $relevantArticlesIds = $response?$response["similar_articles"]:[];
             $relevantArticles = $model::with('category')->orderByDesc('publicationDate')->whereIn('id', $relevantArticlesIds)->limit(3)->get();
-            if (count($relevantArticles) == 0) {
-                $relevantArticles = $model::with('category')->inRandomOrder()->take(3)->get();
-            }
         } catch (\Exception $e) {
             \Log::warning('Recommendation system error. Reason: ' . $e);
         }
 
-        return $relevantArticles->map(fn ($a) => [
+        return collect($relevantArticles)->map(fn ($a) => [
             'bannerUrl' => $a->bannerUrl,
             'bannerUrlPodcast' => $a->banner_url,
             'publicationDate' => $a->publicationDate,
             'title' => $a->title,
             'summary' => method_exists($a, 'getSummary') ? $a->getSummary() : '',
             'slug' => $a->slug,
-            'type' => $model instanceof \App\Models\Article ? 'article' : 'podcast',
+            'type' => $model instanceof TechStudio\Blog\app\Models\Article ? 'article' : 'podcast',
             "minutesToRead" => method_exists($a, 'minutesToRead') ? $a->minutesToRead() : '',
             'category' => [
                 "slug" => $a->category ? $a->category->slug : 'no-category',
