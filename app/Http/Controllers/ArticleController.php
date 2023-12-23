@@ -52,7 +52,7 @@ class ArticleController extends Controller
     public function articlesArchiveCommon()
     {
         return [
-            'categories' => $this->categoryService->getCategoriesForFilter(new Article()),  
+            'categories' => $this->categoryService->getCategoriesForFilter(new Article()),
         ];
 
     }
@@ -81,7 +81,7 @@ class ArticleController extends Controller
         $currentUserAction = $request->action;
         $functionName = strtolower($request->action).'By';
         $slug->$functionName(Auth::user()->id);
-        
+
         return [
             'feedback' => [
                 'likesCount' => $slug->likes_count??0,
@@ -203,7 +203,7 @@ class ArticleController extends Controller
         ];
     }
 
-    
+
     public function updateEditorData($local, Request $request)
     {
         if ($request['id']) {
@@ -212,7 +212,7 @@ class ArticleController extends Controller
             $article = new Article;
             $article->status = 'draft';
         }
-        
+
         if ($request->author) {
             $author = UserProfile::where('id', $request->author['id'])->firstOrFail();
         } else {
@@ -329,9 +329,11 @@ class ArticleController extends Controller
             } elseif ($request->sortKey == 'comments') {
                 $query->withCount('comments')->orderBy('comments_count', $sortOrder);
             }
+        }else{
+            $query->orderByDesc('created_at');
         }
 
-        $query->orderByDesc('id');
+
         $articles = $query->paginate(10);
 
         $data = [
@@ -495,7 +497,7 @@ class ArticleController extends Controller
         $articles = Article::whereIn(
             'id',
             explode(',', request()->get('ids'))
-        )->get();
+        )->orderByDesc('publicationDate')->get();
         return response()->json(ArticleResource::collection($articles));
     }
 
