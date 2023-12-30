@@ -24,7 +24,10 @@ class ArticleResource extends JsonResource
             'bannerUrlMobile' => $this->bannerUrlMobile,
             'publicationDate' => $this->publicationDate,
             'author' => new AthorResource($this->author),
-            'category' => new CategoryResource($this->category)
+            'category' => new CategoryResource($this->category),
+            'tags' => TagResource::collection($this->tags),
+            "minutesToRead" => $this->minutesToRead(),
+            "information" => $this->information,
         ];
     }
 }
