@@ -402,8 +402,8 @@ class ArticleController extends Controller
 
         $authors = $authors->map(function($author){
             return [
-                'id' => $author->id,
-                'displayName' => $author->getdisplayName(),
+                'id' => $author->id ?? null,
+                'displayName' => $author->getdisplayName() ?? null,
                 'type' => 'user',
             ];
         });
