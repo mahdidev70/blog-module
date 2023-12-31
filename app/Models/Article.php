@@ -62,13 +62,13 @@ class Article extends Model
 
     public function author()
     {
-        return $this->belongsTo(UserProfile::class);
+        return $this->belongsTo(UserProfile::class, 'user_id');
     }
 
     // // TODO check (remove?)
     public function user()
     {
-        return $this->belongsTo(UserProfile::class);
+        return $this->belongsTo(UserProfile::class, 'user_id');
     }
     public function category()
     {
