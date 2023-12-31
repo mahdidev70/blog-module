@@ -18,4 +18,4 @@ jobs:
         username: ${{ secrets.TEST_SERVER_USERNAME }}
         key: ${{ secrets.TEST_SERVER_KEY }}
         port: ${{ secrets.TEST_SERVER_PORT }}
-        script: sudo bash -c "cd /services/diginext/diginext-new-backend/modules/tech-studio/blog-module && git pull origin master && bash .github/workflows/test-deploy.bash"
+        script: sudo bash -c "cd /ssd2/projects/diginext/diginext-new-backend/modules/tech-studio/blog-module && git pull origin master && bash .github/workflows/test-deploy.bash"
