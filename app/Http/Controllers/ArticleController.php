@@ -24,6 +24,7 @@ use Carbon\Carbon;
 use TechStudio\Blog\app\Http\Requests\UploadFileRequest;
 use TechStudio\Blog\app\Http\Requests\UploadImageFileRequest;
 use TechStudio\Blog\app\Http\Resources\ArticleResource;
+use TechStudio\Blog\app\Http\Resources\ArticlesResource;
 use TechStudio\Core\app\Models\Bookmark;
 
 // ===== not done : =====
@@ -136,7 +137,17 @@ class ArticleController extends Controller
             ];
         });
 
+        if (auth()->check()) {
+            $userId = Auth::user()->id;
+
+            // $instructors = Course::groupBy('instructor_id')->pluck('instructor_id');
+            // $instructors = UserProfile::whereIn('id', $instructors)->orWhere('id', $userId)->get();
+        }else {
+            // $instructors = Course::groupBy('instructor_id')->pluck('instructor_id');
+            // $instructors = UserProfile::whereIn('id', $instructors)->get();
+        }
         $authors = $articleModel->get()->unique('author_id')->pluck('author');
+
 
         $authors = $authors->map(function($author){
             return [
@@ -501,20 +512,24 @@ class ArticleController extends Controller
         return response()->json(ArticleResource::collection($articles));
     }
 
-    public function getUserArticle() 
+    public function getUserArticle(Request $request) 
     {
         $user = Auth::user();
         $articleModle = new Article();
 
-        $myArticles = Article::where('author_id', $user->id)->get();
+        if ($request['data'] == 'my') {
 
-        $bookmarks = Bookmark::where('bookmarkable_type', get_class($articleModle))
+            $myArticles = Article::where('author_id', $user->id)->paginate(10);
+            return new ArticlesResource($myArticles);
+
+        }elseif ($request['data'] == 'bookmark') {
+
+            $bookmarks = Bookmark::where('bookmarkable_type', get_class($articleModle))
             ->where('user_id', $user->id)->pluck('bookmarkable_id');
-        $articleBookmarks = Article::whereIn('id', $bookmarks)->get();
-            
-        return [
-            'myArticle' => ArticleResource::collection($myArticles),
-            'bookmarkArticle' => ArticleResource::collection($articleBookmarks),
-        ];
+            $articleBookmarks = Article::whereIn('id', $bookmarks)->paginate(10);
+
+            return new ArticlesResource($articleBookmarks);
+        }
+
     }
 }
