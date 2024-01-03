@@ -38,10 +38,10 @@ class ArticleController extends Controller
     public function __construct(protected ArticleService $articleService, protected CategoryService $categoryService, protected FileService $fileService)
     {}
 
-    public function getArticle($local, $slug, Request $request)
+    public function getArticle($locale, $slug, Request $request)
     {
         $type = $request['type'];
-        $getArticle = Article::where('slug', $slug)->where('language', $local)->firstOrFail();
+        $getArticle = Article::where('slug', $slug)->where('language', $locale)->firstOrFail();
         return $this->articleService->getArticle($getArticle, $type);
     }
 
@@ -71,9 +71,9 @@ class ArticleController extends Controller
         return ArrayPaginate::paginate($result, 2);
     }
 
-    public function storeFeedback($local, $slug,Request $request)
+    public function storeFeedback($locale, $slug,Request $request)
     {
-        $slug = Article::where('slug', $slug)->where('language', $local)->firstOrFail();
+        $slug = Article::where('slug', $slug)->where('language', $locale)->firstOrFail();
 
         if (!$request->has('action') || !in_array($request->action,['clear', 'like', 'dislike'])){
             throw new BadRequestException("'action' request data field must be either of [clear, like]."); // improve validation
@@ -91,14 +91,14 @@ class ArticleController extends Controller
         ];
     }
 
-    public function articlesByCategoryCommon($local,Category $slug)
+    public function articlesByCategoryCommon($locale,Category $slug)
     {
         return  $this->articleService->getFirstArticleByCategory($slug);
     }
 
-    public function storeBookmark($local, $slug,Request $request)
+    public function storeBookmark($locale, $slug,Request $request)
     {
-        $slug = Article::where('slug', $slug)->where('language', $local)->firstOrFail();
+        $slug = Article::where('slug', $slug)->where('language', $locale)->firstOrFail();
 
         if (!$request->has('action') || !in_array($request->action,['save','clear'])){
             throw new BadRequestException("'action' request data field must be either of [clear, save]."); // improve validation
@@ -165,9 +165,9 @@ class ArticleController extends Controller
         ];
     }
 
-    public function getEditorData($local, $id)
+    public function getEditorData($locale, $id)
     {
-        $article = Article::with('tags', 'author')->where('id', $id)->where('language', $local)->firstOrFail();
+        $article = Article::with('tags', 'author')->where('id', $id)->where('language', $locale)->firstOrFail();
 
         $userModel = new UserProfile();
 
@@ -215,10 +215,10 @@ class ArticleController extends Controller
     }
 
 
-    public function updateEditorData($local, Request $request)
+    public function updateEditorData($locale, Request $request)
     {
         if ($request['id']) {
-            $article = Article::where('id', $request->id)->where('language', $local)->firstOrFail();
+            $article = Article::where('id', $request->id)->where('language', $locale)->firstOrFail();
         } else {
             $article = new Article;
             $article->status = 'draft';
@@ -282,9 +282,9 @@ class ArticleController extends Controller
         return ['id' => $article->id];
     }
 
-    public function getArticleListData($local, Request $request)
+    public function getArticleListData($locale, Request $request)
     {
-        $query = Article::where('language', $local)->with('author', 'comments', 'category');
+        $query = Article::where('language', $locale)->with('author', 'comments', 'category');
 
         $userModel = new UserProfile();
 
@@ -385,12 +385,12 @@ class ArticleController extends Controller
         return $data;
     }
 
-    public function getArticleListCommon($local, Request $request)
+    public function getArticleListCommon($locale, Request $request)
     {
         $id = Auth::user()->id;
         $articleModel = new Article();
 
-        $category = Category::where('table_type', get_class($articleModel))->where('language', $local)->get();
+        $category = Category::where('table_type', get_class($articleModel))->where('language', $locale)->get();
 
         $counts = [
             'all' => $articleModel->whereNot('status', 'deleted')->count(),
@@ -435,7 +435,7 @@ class ArticleController extends Controller
 
     }
 
-    public function updateArticlesStatus($local, Article $article, Request $request)
+    public function updateArticlesStatus($locale, Article $article, Request $request)
     {
         $validatedData = $request->validate([
             'status' => 'required|in:published,hidden,deleted,draft',
@@ -446,7 +446,7 @@ class ArticleController extends Controller
 
         if ($validatedData['status'] == 'published') {
             $date = Carbon::now()->toDateTimeString();
-            $articles = $article->whereIn('id', $ids)->where('language', $local)->get();
+            $articles = $article->whereIn('id', $ids)->where('language', $locale)->get();
 
             foreach ($articles as $article) {
                 $data = Validator::make($article->toArray(), [
@@ -477,7 +477,7 @@ class ArticleController extends Controller
         ];
     }
 
-    public function uploadArticleCover(UploadImageFileRequest $request)
+    public function uploadArticleCover($locale, UploadImageFileRequest $request)
     {
         $createdFiles = $this->fileService->upload(
             $request,
@@ -490,7 +490,7 @@ class ArticleController extends Controller
         return response()->json($createdFiles);
     }
 
-    public function uploadArticleContent(UploadFileRequest $request)
+    public function uploadArticleContent($locale, UploadFileRequest $request)
     {
         $createdFiles = $this->fileService->upload(
             $request,
@@ -512,7 +512,7 @@ class ArticleController extends Controller
         return response()->json(ArticleResource::collection($articles));
     }
 
-    public function getUserArticle(Request $request) 
+    public function getUserArticle($locale, Request $request) 
     {
         $user = Auth::user();
         $articleModle = new Article();
