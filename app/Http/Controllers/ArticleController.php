@@ -41,7 +41,7 @@ class ArticleController extends Controller
     public function getArticle($locale, $slug, Request $request)
     {
         $type = $request['type'];
-        $getArticle = Article::where('slug', $slug)->where('language', $locale)->firstOrFail();
+        $getArticle = Article::with('author')->where('slug', $slug)->where('language', $locale)->firstOrFail();
         return $this->articleService->getArticle($getArticle, $type);
     }
 

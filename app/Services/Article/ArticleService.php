@@ -148,7 +148,7 @@ class ArticleService
 
     public function getArticle($article)
     {
-        $article = $article->with('author')->firstOrFail();
+        // $article = $article->with('author')->firstOrFail();
 
         if (!is_null($article->tags)){
             $tags = $article->tags->map(fn ($tag) => [
