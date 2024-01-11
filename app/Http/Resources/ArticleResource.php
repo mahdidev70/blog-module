@@ -28,6 +28,7 @@ class ArticleResource extends JsonResource
             'tags' => TagResource::collection($this->tags),
             "minutesToRead" => $this->minutesToRead(),
             "information" => $this->information,
+            "status" => $this->status,
         ];
     }
 }
