@@ -207,7 +207,7 @@ class ArticleController extends Controller
             'publicationDate' => $article->publicationDate,
             'author' => [
                 'displayName' => $article->author->getDisplayName(),
-                'type' => $article->author_type,
+                'type' => 'user',
                 'id' => $article->author->id,
             ],
             'information' => json_decode($article->information),
