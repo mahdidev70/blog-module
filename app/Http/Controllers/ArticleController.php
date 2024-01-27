@@ -137,17 +137,7 @@ class ArticleController extends Controller
             ];
         });
 
-        if (auth()->check()) {
-            $userId = Auth::user()->id;
-
-            // $instructors = Course::groupBy('instructor_id')->pluck('instructor_id');
-            // $instructors = UserProfile::whereIn('id', $instructors)->orWhere('id', $userId)->get();
-        }else {
-            // $instructors = Course::groupBy('instructor_id')->pluck('instructor_id');
-            // $instructors = UserProfile::whereIn('id', $instructors)->get();
-        }
-        $authors = $articleModel->get()->unique('author_id')->pluck('author');
-
+        $authors = UserProfile::select('id', 'first_name', 'last_name')->get();
 
         $authors = $authors->map(function($author){
             return [
