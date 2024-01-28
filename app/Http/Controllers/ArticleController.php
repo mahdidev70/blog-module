@@ -330,12 +330,9 @@ class ArticleController extends Controller
             } elseif ($request->sortKey == 'comments') {
                 $query->withCount('comments')->orderBy('comments_count', $sortOrder);
             }
-        }else{
-            $query->orderByDesc('created_at');
         }
 
-
-        $articles = $query->paginate(10);
+        $articles = $query->orderBy('id', $sortOrder)->paginate(10);
 
         $data = [
             'total' => $articles->total(),
