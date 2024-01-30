@@ -190,11 +190,13 @@ class ArticleService
             $response = Http::timeout(1)->get("http://recommendation:5600/" . $model->id)->json();
             $relevantArticlesIds = $response?$response["similar_articles"]:[];
             $relevantArticles = $model::with('category')->orderByDesc('publicationDate')->whereIn('id', $relevantArticlesIds)->limit(3)->get();
-            if (count($relevantArticles) == 0) {
-                $relevantArticles = $model::with('category')->inRandomOrder()->take(3)->get();
-            }
+            
         } catch (\Exception $e) {
             \Log::warning('Recommendation system error. Reason: ' . $e);
+        }
+        
+        if (count($relevantArticles) == 0) {
+            $relevantArticles = $model::with('category')->whereNot('id', $model->id)->inRandomOrder()->take(3)->get();
         }
 
         return collect($relevantArticles)->map(fn ($a) => [
