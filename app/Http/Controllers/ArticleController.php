@@ -470,7 +470,7 @@ class ArticleController extends Controller
             $request,
             max_count: 1,
             max_size_mb: 2,
-            types: ['jpg', 'jpeg', 'png'],
+            types: ['jpg', 'jpeg', 'png', 'webp'],
             format_result_as_attachment: false,
             storage_key: 'blog',
         );
@@ -483,7 +483,7 @@ class ArticleController extends Controller
             $request,
             max_count: 500,
             max_size_mb: 1000,
-            types: ['jpg', 'jpeg', 'png', 'mp4', 'mkv'],
+            types: ['jpg', 'jpeg', 'png', 'mp4', 'mkv', 'mp3', 'voc', 'webm', 'webp'],
             format_result_as_attachment: true,
             storage_key: 'blog',
         );
