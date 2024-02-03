@@ -59,7 +59,7 @@ use Illuminate\Support\Facades\Config;
         });
 
         // ============= PANEL SIDE ===============
-        Route::prefix('article_editor')->middleware('create-article')->group(function (){
+        Route::prefix('article_editor')->middleware('can:create-article')->group(function (){
             Route::get('/data/{id}', [ArticleController::class, 'getEditorData']);
             Route::get('/common', [ArticleController::class, 'getEditorCommon']);
             Route::put('/data', [ArticleController::class, 'updateEditorData']); 
