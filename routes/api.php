@@ -8,7 +8,7 @@ use TechStudio\Core\app\Http\Controllers\CommentController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
-
+use TechStudio\Core\app\Http\Controllers\SearchController;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +20,7 @@ use Illuminate\Support\Facades\Config;
 | be assigned to the "api" middleware group. Make something great!
 |
 */
+    Route::get('/search', [SearchController::class,'search']);
 
     // ============ CLIENT SIDE ===============
     Route::prefix('articles')->group(function () {
