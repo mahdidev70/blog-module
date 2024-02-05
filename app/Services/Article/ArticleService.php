@@ -19,6 +19,7 @@ class ArticleService
 {
     public function getAuthor(UserProfile $user)
     {
+        \Log::info($user->getDisplayName());
        return [
             "displayName" => $user->getDisplayName(),
             "avatarUrl" => $user->avatar_url,
@@ -36,7 +37,7 @@ class ArticleService
             ->take(4)
             ->get()
             ->map(function ($article) {
-                $article->author = $this->getAuthor($article->author);
+                $article->author->displayName = $this->getAuthor($article->author)['displayName'];
                 return $article;
         });
     }
@@ -54,7 +55,7 @@ class ArticleService
             });
     }
 
-    public function getArticles($slug=null,$request=null) 
+    public function getArticles($slug=null,$request=null)
     {
         $language = App::currentLocale();
 
@@ -180,8 +181,8 @@ class ArticleService
             'information' => json_decode($article->information),
         ];
     }
-    
-    public function getRelevantContentCards($model, $relatedModel) 
+
+    public function getRelevantContentCards($model, $relatedModel)
     {
         $relevantArticlesIds = null;
         $relevantArticles = [];
@@ -190,11 +191,11 @@ class ArticleService
             $response = Http::timeout(1)->get("http://recommendation:5600/" . $model->id)->json();
             $relevantArticlesIds = $response?$response["similar_articles"]:[];
             $relevantArticles = $model::with('category')->orderByDesc('publicationDate')->whereIn('id', $relevantArticlesIds)->limit(3)->get();
-            
+
         } catch (\Exception $e) {
             \Log::warning('Recommendation system error. Reason: ' . $e);
         }
-        
+
         if (count($relevantArticles) == 0) {
             $relevantArticles = $model::with('category')->whereNot('id', $model->id)->inRandomOrder()->take(3)->get();
         }

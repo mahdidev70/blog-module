@@ -51,7 +51,7 @@ class Article extends Model
                     $query->where('type', $request->get('type'));
                 });
             });
-        
+
         }
     }
 
@@ -90,7 +90,7 @@ class Article extends Model
         }
         return $this->summary;
     }
-    
+
     public function updateSummary()
     {
         foreach ($this->content as $item) {
