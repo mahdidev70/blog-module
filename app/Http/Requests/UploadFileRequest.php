@@ -23,7 +23,7 @@ class UploadFileRequest extends FormRequest
     {
         return [
             'files' => 'required|array',
-            'files.*' => 'mimes:jpeg,png,jpg,pdf,mp4,mp3,mkv,webp|max:204800'
+            'files.*' => 'mimes:jpeg,png,jpg,pdf,mp4,mp3,mkv,webp,svg|max:204800'
         ];
     }
 }
