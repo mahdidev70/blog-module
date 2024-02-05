@@ -60,7 +60,7 @@ use TechStudio\Core\app\Http\Controllers\SearchController;
         });
 
         // ============= PANEL SIDE ===============
-        Route::prefix('article_editor')->middleware('can:users')->group(function (){
+        Route::prefix('article_editor')->middleware('can:create-article')->group(function (){
             Route::get('/data/{id}', [ArticleController::class, 'getEditorData']);
             Route::get('/common', [ArticleController::class, 'getEditorCommon']);
             Route::put('/data', [ArticleController::class, 'updateEditorData']);
