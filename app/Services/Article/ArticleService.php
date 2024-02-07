@@ -19,7 +19,6 @@ class ArticleService
 {
     public function getAuthor(UserProfile $user)
     {
-        \Log::info($user->getDisplayName());
        return [
             "displayName" => $user->getDisplayName(),
             "avatarUrl" => $user->avatar_url,
