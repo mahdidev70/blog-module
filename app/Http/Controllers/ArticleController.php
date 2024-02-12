@@ -459,7 +459,7 @@ class ArticleController extends Controller
                     'slug' => 'required', //BEDON SPACE -- MAX CHAR = 80 -- add slug generator
                     'content' => 'required',
                     'bannerUrl' => 'required',
-                    'category_id' => 'required|integer',
+                    'category_id' => 'integer',
                     'summary' => 'required',
                     'viewsCount' => 'integer',
                     'author_id' => 'required|integer',
