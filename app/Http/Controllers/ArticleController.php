@@ -151,12 +151,11 @@ class ArticleController extends Controller
 
         $authors = $authors->map(function ($author) {
             return [
-                'id' => $author->id,
+                'id' => $author->user_id,
                 'displayName' => $author->getdisplayName(),
                 'type' => 'user',
             ];
         });
-
 
         return [
             'categories' => $categories ?? '',
@@ -217,7 +216,7 @@ class ArticleController extends Controller
             'author' => [
                 'displayName' => $article->author->getDisplayName(),
                 'type' => 'user',
-                'id' => $article->author->id,
+                'id' => $article->author->user_id,
             ],
             'information' => json_decode($article->information),
         ];
@@ -382,7 +381,7 @@ class ArticleController extends Controller
                 'slug' => $article->slug,
                 'author' => [
                     'displayName' => $article->author->getDisplayName(),
-                    'id' => $article->author->id,
+                    'id' => $article->author->user_id,
                     'type' => $article->author_type,
                 ],
                 'category' =>  $article->category->slug ?? "",
@@ -425,7 +424,7 @@ class ArticleController extends Controller
 
         $authors = $authors->map(function ($author) {
             return [
-                'id' => $author->id ?? null,
+                'id' => $author->user_id ?? null,
                 'displayName' => $author->getdisplayName() ?? null,
                 'type' => 'user',
             ];
