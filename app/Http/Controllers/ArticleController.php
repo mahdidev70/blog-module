@@ -315,12 +315,6 @@ class ArticleController extends Controller
             $query->where('author_id', $request->input('authorId'));
         }
 
-        if (isset($request->authorType) && $request->authorType != null) {
-            if ($request->authorType == 'user') {
-                $query->where('author_type', get_class($userModel));
-            }
-        }
-
         if (isset($request->categorySlug) && $request->categorySlug != null) {
             $query->whereHas('category', function ($categoryQuery) use ($request) {
                 $categoryQuery->where('slug', $request->input('categorySlug'));
