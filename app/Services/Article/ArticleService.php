@@ -57,10 +57,9 @@ class ArticleService
     public function getArticles($slug=null,$request=null)
     {
         $language = App::currentLocale();
-
         $articlesQuery = Article::query()->where('language', $language)->with(['tags']);
 
-        if ($request->has('category') && strlen($request->category) > 0){
+        if ($request->has('category')  && $request->category != 'null' && $request->category != 'undefined' &&  strlen($request->category) > 0){
             if ($request->category !== 'all'){
                   $articlesQuery->whereHas('category',function ($query) use($request){
                       $query->whereIn('slug', explode(',', $request->category));
@@ -68,7 +67,7 @@ class ArticleService
             }
         }
 
-        if ($request->has('tag') && strlen($request->tag) > 0){
+        if ($request->has('tag') && $request->tag != 'null' && $request->tag != 'undefined' && strlen($request->tag) > 0){
             $articlesQuery->whereHas('tags',function ($query) use($request){
                 $query->whereIn('slug', explode(',', $request->tag));
             });
@@ -85,7 +84,7 @@ class ArticleService
                 // $articlesQuery->orderBy('likesCount', 'DESC');  TODO: implement likes sort
                 $articlesQuery->withCount([
                     'likes' => function ($query) {
-                        $query->where('likeable_type', 'App\Models\Article');
+                        $query->where('likeable_type', 'TechStudio\Blog\app\Models\Article');
                     }
                 ])->orderBy('likes_count', 'desc');
             } else {
