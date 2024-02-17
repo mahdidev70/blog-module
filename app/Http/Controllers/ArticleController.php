@@ -3,6 +3,7 @@
 namespace TechStudio\Blog\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use TechStudio\Blog\app\Repositories\Article\ArticleRepositoryInterface;
 use TechStudio\Core\app\Models\Category;
 use TechStudio\Core\app\Models\Tag;
 use TechStudio\Blog\app\Models\Article;
@@ -35,7 +36,8 @@ use TechStudio\Core\app\Models\Bookmark;
 
 class ArticleController extends Controller
 {
-    public function __construct(protected ArticleService $articleService, protected CategoryService $categoryService, protected FileService $fileService)
+    public function __construct(protected ArticleService $articleService, protected CategoryService $categoryService,
+                                protected FileService $fileService, protected ArticleRepositoryInterface $articleRepository)
     {
     }
 
@@ -392,37 +394,25 @@ class ArticleController extends Controller
 
     public function getArticleListCommon($locale, Request $request)
     {
-        $id = Auth::user()->id;
-        $articleModel = new Article();
+        $user_id = Auth::user()->id;
 
-        $category = Category::where('table_type', get_class($articleModel))->where('language', $locale)->get();
-
-        $counts = [
-            'all' => $articleModel->whereNot('status', 'deleted')->count(),
-            'mine' => $articleModel->where('author_id', $id)->count(),
-            'published' => $articleModel->where('status', 'published')->count(),
-            'draft' => $articleModel->where('status', 'draft')->count(),
-            'hidden' => $articleModel->where('status', 'hidden')->count(),
-            'deleted' => $articleModel->where('status', 'deleted')->count(),
-        ];
-
-        $categories = $category->map(function ($category) {
+        $categories = $this->articleRepository->getCategoriesWithCourses($locale)->map(function ($category) {
             return [
                 'title' => $category->title,
                 'slug' => $category->slug,
             ];
         });
 
+        $counts = $this->articleRepository->getCommonCounts($user_id);
 
-        $authors = $articleModel->get()->unique('author_id')->pluck('author');
-
-        $authors = $authors->map(function ($author) {
+        $authors = $this->articleRepository->getArticleAuthors()->map(function ($article) {
             return [
-                'id' => $author->user_id ?? null,
-                'displayName' => $author->getdisplayName() ?? null,
+                'id' => $article->author->user_id ?? null,
+                'displayName' => $article->author->getdisplayName() ?? null,
                 'type' => 'user',
             ];
         });
+
 
         $data = [
             'counts' => $counts,
