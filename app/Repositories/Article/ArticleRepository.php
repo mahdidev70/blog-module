@@ -22,7 +22,7 @@ class ArticleRepository implements ArticleRepositoryInterface
 
     public function getCommonCounts($userId)
     {
-        $query = $this->model::query();
+        $query = new Article();
         $all = $query->whereNot('status', 'deleted')->count();
         $mine = $query->where('author_id', $userId)->count();
         $published = $query->where('status', 'published')->count();
