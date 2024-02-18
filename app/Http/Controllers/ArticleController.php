@@ -3,6 +3,7 @@
 namespace TechStudio\Blog\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use Illuminate\Support\Facades\Cache;
 use TechStudio\Blog\app\Repositories\Article\ArticleRepositoryInterface;
 use TechStudio\Core\app\Models\Category;
 use TechStudio\Core\app\Models\Tag;
@@ -50,7 +51,14 @@ class ArticleController extends Controller
 
     public function listArticles(Request $request)
     {
-        return $this->articleService->getArticles(request: $request);
+        $minutes = config('cache.short_time')??30;
+        $locale = App::currentLocale();
+        $cacheKey =  'article' . $locale;
+        $articles = $this->articleRepository->getAllArticles($request);
+        return Cache::remember($cacheKey, $minutes, function () use ($articles) {
+            return $this->articleService->generateResponse($articles);
+        });
+        //  return $this->articleService->getArticles(request: $request);
     }
 
     public function articlesArchiveCommon()

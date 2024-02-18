@@ -2,6 +2,7 @@
 
 namespace TechStudio\Blog\app\Repositories\Article;
 
+use Illuminate\Support\Facades\App;
 use TechStudio\Blog\app\Models\Article;
 use TechStudio\Core\app\Models\Category;
 
@@ -37,5 +38,53 @@ class ArticleRepository implements ArticleRepositoryInterface
             'hidden' => $hidden,
             'deleted' => $deleted
         ];
+    }
+
+    public function getAllArticles($request)
+    {
+        $language = App::currentLocale();
+        $articlesQuery = Article::query()->where('language', $language)->with(['tags']);
+
+        if ($request->has('category')  && $request->category != 'null' && $request->category != 'undefined' &&  strlen($request->category) > 0){
+            if ($request->category !== 'all'){
+                $articlesQuery->whereHas('category',function ($query) use($request){
+                    $query->whereIn('slug', explode(',', $request->category));
+                });
+            }
+        }
+
+        if ($request->has('tag') && $request->tag != 'null' && $request->tag != 'undefined' && strlen($request->tag) > 0){
+            $articlesQuery->whereHas('tags',function ($query) use($request){
+                $query->whereIn('slug', explode(',', $request->tag));
+            });
+        }
+
+        if ($request->has('sort')) {
+            $sort = $request->sort;
+            if ($sort === 'views') {
+                $articlesQuery->orderBy('viewsCount', 'DESC');
+            } else if ($sort === 'likes') {
+                $articlesQuery->withCount([
+                    'likes' => function ($query) {
+                        $query->where('likeable_type', 'TechStudio\Blog\app\Models\Article');
+                    }
+                ])->orderBy('likes_count', 'desc');
+            } else if ($request->sort == 'recent'){
+                $articlesQuery->orderBy('publicationDate', 'DESC');
+            }
+        } else {
+            $articlesQuery->orderBy('publicationDate', 'DESC');
+        }
+
+        if ($request->has('skip') && $request->skip !== 0 && $request->skip !== 1) {
+            return response()->json(['message' => 'Skip can only be 0 or 1.'], 422);
+        }
+
+        if ($request->has('skip') && $request->skip === 1) {
+            $first_article_id = $articlesQuery->pluck('id')->first();
+            $articlesQuery->where('id', '!=', $first_article_id);
+        }
+
+        return $articlesQuery->paginate(12);
     }
 }
