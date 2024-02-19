@@ -155,7 +155,9 @@ class ArticleService
 
         $relatedModel = new Article();
         $article->increment('viewsCount');
-        $user_id = Auth::user()?->id;
+        if(auth()->check()){
+            $user_id = auth()->id();
+        }
 
         return [
             'title' => $article->title,
