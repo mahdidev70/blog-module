@@ -67,7 +67,7 @@ use TechStudio\Core\app\Http\Controllers\SearchController;
 
         });
 
-
+        Route::post('panel/articles/upload_cover', [ArticleController::class, 'uploadArticleCover'])->middleware('can:create-article');
         Route::prefix('panel')->middleware('can:blogs')->group(function () {
 
             // ---- article ----
@@ -76,7 +76,6 @@ use TechStudio\Core\app\Http\Controllers\SearchController;
                 Route::get('/data', [ArticleController::class, 'getArticleListData']); //=> Done
                 Route::get('/common', [ArticleController::class, 'getArticleListCommon']); //=> Done
                 Route::put('/set_status', [ArticleController::class, 'updateArticlesStatus']); //=> Done
-                Route::post('/upload_cover', [ArticleController::class, 'uploadArticleCover']);
                 Route::post('/inline_media', [ArticleController::class, 'uploadArticleContent']);
 
             });
