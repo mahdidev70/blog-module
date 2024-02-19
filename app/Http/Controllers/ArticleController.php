@@ -29,18 +29,11 @@ use TechStudio\Blog\app\Http\Resources\ArticleResource;
 use TechStudio\Blog\app\Http\Resources\ArticlesResource;
 use TechStudio\Core\app\Models\Bookmark;
 
-// ===== not done : =====
-// use App\Models\Bookmark;
-// use Illuminate\Validation\ValidationException;
-
-// use App\Helper\HtmlContent;
-
 class ArticleController extends Controller
 {
     public function __construct(protected ArticleService $articleService, protected CategoryService $categoryService,
                                 protected FileService $fileService, protected ArticleRepositoryInterface $articleRepository)
-    {
-    }
+    {}
 
     public function getArticle($locale, $slug, Request $request)
     {
@@ -91,7 +84,7 @@ class ArticleController extends Controller
 
         $currentUserAction = $request->action;
         $functionName = strtolower($request->action) . 'By';
-        $slug->$functionName(Auth::user()->id);
+        $slug->$functionName(auth()->user()->id);
 
         return [
             'feedback' => [
@@ -116,9 +109,9 @@ class ArticleController extends Controller
 
         $currentUserAction = $request->action;
         if ($request->action == 'clear') {
-            $slug->clearBookmarkBy(Auth::user()->id);
+            $slug->clearBookmarkBy(auth()->user()->id);
         } else {
-            $slug->saveBy(Auth::user()->id);
+            $slug->saveBy(auth()->user()->id);
         }
 
 
@@ -402,7 +395,7 @@ class ArticleController extends Controller
 
     public function getArticleListCommon($locale, Request $request)
     {
-        $user_id = Auth::user()->id;
+        $user_id = auth()->user()->id;
 
         $categories = $this->articleRepository->getCategoriesWithCourses($locale)->map(function ($category) {
             return [
@@ -516,7 +509,7 @@ class ArticleController extends Controller
 
     public function getUserArticle($locale, Request $request)
     {
-        $user = Auth::user();
+        $user = auth()->user();
         $articleModle = new Article();
 
         if ($request['data'] == 'my') {
