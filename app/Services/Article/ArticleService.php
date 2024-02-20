@@ -55,9 +55,57 @@ class ArticleService
                 return $article;
             });
     }
+
     public function getArticles($slug=null,$request=null)
     {
-        $articlesQuery = $this->articleRepository->getAllArticles($request);
+        $language = App::currentLocale();
+        $articlesQuery = Article::query()->where('language', $language)->with(['tags']);
+
+        if ($request->has('category')  && $request->category != 'null' && $request->category != 'undefined' &&  strlen($request->category) > 0){
+            if ($request->category !== 'all'){
+                  $articlesQuery->whereHas('category',function ($query) use($request){
+                      $query->whereIn('slug', explode(',', $request->category));
+                  });
+            }
+        }
+
+        if ($request->has('tag') && $request->tag != 'null' && $request->tag != 'undefined' && strlen($request->tag) > 0){
+            $articlesQuery->whereHas('tags',function ($query) use($request){
+                $query->whereIn('slug', explode(',', $request->tag));
+            });
+        }
+
+        if (!$request->has('sort')){
+            $articlesQuery->orderBy('publicationDate', 'DESC');
+        } else {
+            if ($request->sort == 'recent') {
+                $articlesQuery->orderBy('publicationDate', 'DESC');
+            } else if ($request->sort == 'views') {
+                $articlesQuery->orderBy('viewsCount', 'DESC');
+            } else if ($request->sort == 'likes') {
+                // $articlesQuery->orderBy('likesCount', 'DESC');  TODO: implement likes sort
+                $articlesQuery->withCount([
+                    'likes' => function ($query) {
+                        $query->where('likeable_type', 'TechStudio\Blog\app\Models\Article');
+                    }
+                ])->orderBy('likes_count', 'desc');
+            } else {
+                return response()->json(
+                    ['message' => "Unexpected sorting parameter. Use 'recent', 'views' or 'likes'."], 400
+                );
+            }
+        }
+        if ($request->has('skip') && $request->skip != 0){
+            if ($request->skip != 1) {
+                return response()->json([
+                    'message' => 'Skip can only be 0 or 1.',
+                ], 422);
+            }
+            $first_article_id = $articlesQuery->pluck('id')->first();
+            $articlesQuery = $articlesQuery->whereNot('id',$first_article_id);
+        }
+
+        $articlesQuery = $articlesQuery->paginate(12);
         return $this->generateResponse($articlesQuery);
     }
 
