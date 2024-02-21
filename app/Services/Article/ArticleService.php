@@ -32,7 +32,9 @@ class ArticleService
     {
         $language = App::currentLocale();
 
-        return Article::where('language', $language)->select(['slug', 'title', 'bannerUrl', 'publicationDate', 'summary', 'author_id'])
+        return Article::where('language', $language)
+            ->where('type','article')
+            ->select(['slug', 'title', 'bannerUrl', 'publicationDate', 'summary', 'author_id'])
             ->with('author')
             ->orderBy('publicationDate', 'DESC')
             ->take(4)
