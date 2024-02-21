@@ -42,21 +42,20 @@ class ArticleController extends Controller
         return $this->articleService->getArticle($getArticle, $type);
     }
 
-   /* public function listArticles(Request $request)
+    public function listArticles(Request $request)
     {
         $minutes = config('cache.short_time')??30;
         $locale = App::currentLocale();
-        $cacheKey =  'article' . $locale;
+        $cacheKey =  'articlesLandingPage' . $locale;
         $articles = $this->articleRepository->getAllArticles($request);
         return Cache::remember($cacheKey, $minutes, function () use ($articles) {
             return $this->articleService->generateResponse($articles);
         });
-        //  return $this->articleService->getArticles(request: $request);
-    }*/
-    public function listArticles(Request $request)
+    }
+   /* public function listArticles(Request $request)
     {
         return $this->articleService->getArticles(request: $request);
-    }
+    }*/
 
     public function articlesArchiveCommon()
     {
