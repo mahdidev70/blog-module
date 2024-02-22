@@ -37,7 +37,8 @@ use TechStudio\Core\app\Models\Bookmark;
 class ArticleController extends Controller
 {
     public function __construct(protected ArticleService $articleService, protected CategoryService $categoryService, protected FileService $fileService)
-    {}
+    {
+    }
 
     public function getArticle($locale, $slug, Request $request)
     {
@@ -48,7 +49,7 @@ class ArticleController extends Controller
 
     public function listArticles(Request $request)
     {
-        return $this->articleService->getArticles(request:$request);
+        return $this->articleService->getArticles(request: $request);
     }
 
     public function articlesArchiveCommon()
@@ -56,7 +57,6 @@ class ArticleController extends Controller
         return [
             'categories' => $this->categoryService->getCategoriesForFilter(new Article()),
         ];
-
     }
 
     public function articlesSectionCommon()
@@ -72,43 +72,43 @@ class ArticleController extends Controller
         return ArrayPaginate::paginate($result, 2);
     }
 
-    public function storeFeedback($locale, $slug,Request $request)
+    public function storeFeedback($locale, $slug, Request $request)
     {
         $slug = Article::where('slug', $slug)->where('language', $locale)->firstOrFail();
 
-        if (!$request->has('action') || !in_array($request->action,['clear', 'like', 'dislike'])){
+        if (!$request->has('action') || !in_array($request->action, ['clear', 'like', 'dislike'])) {
             throw new BadRequestException("'action' request data field must be either of [clear, like]."); // improve validation
         }
 
         $currentUserAction = $request->action;
-        $functionName = strtolower($request->action).'By';
+        $functionName = strtolower($request->action) . 'By';
         $slug->$functionName(Auth::user()->id);
 
         return [
             'feedback' => [
-                'likesCount' => $slug->likes_count??0,
+                'likesCount' => $slug->likes_count ?? 0,
                 'currentUserAction' => $currentUserAction,
             ],
         ];
     }
 
-    public function articlesByCategoryCommon($locale,Category $slug)
+    public function articlesByCategoryCommon($locale, Category $slug)
     {
         return  $this->articleService->getFirstArticleByCategory($slug);
     }
 
-    public function storeBookmark($locale, $slug,Request $request)
+    public function storeBookmark($locale, $slug, Request $request)
     {
         $slug = Article::where('slug', $slug)->where('language', $locale)->firstOrFail();
 
-        if (!$request->has('action') || !in_array($request->action,['save','clear'])){
+        if (!$request->has('action') || !in_array($request->action, ['save', 'clear'])) {
             throw new BadRequestException("'action' request data field must be either of [clear, save]."); // improve validation
         }
 
         $currentUserAction = $request->action;
-        if ($request->action == 'clear'){
+        if ($request->action == 'clear') {
             $slug->clearBookmarkBy(Auth::user()->id);
-        }else{
+        } else {
             $slug->saveBy(Auth::user()->id);
         }
 
@@ -140,7 +140,7 @@ class ArticleController extends Controller
 
         $authors = UserProfile::select('id', 'first_name', 'last_name')->get();
 
-        $authors = $authors->map(function($author){
+        $authors = $authors->map(function ($author) {
             return [
                 'id' => $author->id,
                 'displayName' => $author->getdisplayName(),
@@ -235,7 +235,7 @@ class ArticleController extends Controller
 
         if ($request['category'] == "") {
             $article->category_id = NULL;
-        }else {
+        } else {
             $category = Category::where('slug', $request['category'])->firstOrFail();
             $article->category()->associate($category);
         }
@@ -270,13 +270,33 @@ class ArticleController extends Controller
 
         $article->save();
 
-        foreach($request['content'] as $i => $block)
-        {
-            if($block['type'] == 'vid')
-            {
-                ConvertVideo::dispatch($article, 
-                $block['content']['url'],
-                $article->title);
+        foreach ($request['content'] as $i => $block) {
+            if (
+                $block['type'] == 'vid' &&
+                !filter_var(
+                    $block['content']['url'],
+                    FILTER_VALIDATE_URL
+                )
+            ) {
+                ConvertVideo::dispatch(
+                    $article,
+                    $block['content']['url'],
+                    $article->title
+                );
+            }
+
+            if (
+                $block['type'] == 'audio' &&
+                !filter_var(
+                    $block['content']['url'],
+                    FILTER_VALIDATE_URL
+                )
+            ) {
+                ConvertVideo::dispatch(
+                    $article,
+                    $block['content']['url'],
+                    $article->title
+                );
             }
         }
 
@@ -326,7 +346,7 @@ class ArticleController extends Controller
             $query->where('status', $request->input('status'));
         }
 
-        $sortOrder= 'desc';
+        $sortOrder = 'desc';
         if (isset($request->sortOrder) && ($request->sortOrder ==  'asc' || $request->sortOrder ==  'desc')) {
             $sortOrder = $request->sortOrder;
         }
@@ -334,7 +354,7 @@ class ArticleController extends Controller
         if ($request->has('sortKey')) {
             if ($request->sortKey == 'lastUpdate') {
                 $query->orderBy('updated_at', $sortOrder);
-            }elseif ($request->sortKey == 'bookmarks') {
+            } elseif ($request->sortKey == 'bookmarks') {
                 $query->withCount('bookmarks')->orderBy('bookmarks_count', $sortOrder);
             } elseif ($request->sortKey == 'views') {
                 $query->orderBy('viewsCount', $sortOrder);
@@ -409,7 +429,7 @@ class ArticleController extends Controller
 
         $authors = $articleModel->get()->unique('author_id')->pluck('author');
 
-        $authors = $authors->map(function($author){
+        $authors = $authors->map(function ($author) {
             return [
                 'id' => $author->id ?? null,
                 'displayName' => $author->getdisplayName() ?? null,
@@ -430,7 +450,6 @@ class ArticleController extends Controller
         ];
 
         return $data;
-
     }
 
     public function updateArticlesStatus($locale, Article $article, Request $request)
@@ -510,7 +529,7 @@ class ArticleController extends Controller
         return response()->json(ArticleResource::collection($articles));
     }
 
-    public function getUserArticle($locale, Request $request) 
+    public function getUserArticle($locale, Request $request)
     {
         $user = Auth::user();
         $articleModle = new Article();
@@ -519,15 +538,13 @@ class ArticleController extends Controller
 
             $myArticles = Article::where('author_id', $user->id)->paginate(10);
             return new ArticlesResource($myArticles);
-
-        }elseif ($request['data'] == 'bookmark') {
+        } elseif ($request['data'] == 'bookmark') {
 
             $bookmarks = Bookmark::where('bookmarkable_type', get_class($articleModle))
-            ->where('user_id', $user->id)->pluck('bookmarkable_id');
+                ->where('user_id', $user->id)->pluck('bookmarkable_id');
             $articleBookmarks = Article::whereIn('id', $bookmarks)->paginate(10);
 
             return new ArticlesResource($articleBookmarks);
         }
-
     }
 }
