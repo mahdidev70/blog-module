@@ -4,6 +4,8 @@ namespace TechStudio\Blog\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
 use App\Jobs\ConvertVideo;
+use Illuminate\Support\Facades\Cache;
+use TechStudio\Blog\app\Repositories\Article\ArticleRepositoryInterface;
 use TechStudio\Core\app\Models\Category;
 use TechStudio\Core\app\Models\Tag;
 use TechStudio\Blog\app\Models\Article;
@@ -36,7 +38,8 @@ use TechStudio\Core\app\Models\Bookmark;
 
 class ArticleController extends Controller
 {
-    public function __construct(protected ArticleService $articleService, protected CategoryService $categoryService, protected FileService $fileService)
+    public function __construct(protected ArticleService $articleService, protected CategoryService $categoryService,
+                                protected FileService $fileService, protected ArticleRepositoryInterface $articleRepository)
     {
     }
 
@@ -49,7 +52,14 @@ class ArticleController extends Controller
 
     public function listArticles(Request $request)
     {
-        return $this->articleService->getArticles(request: $request);
+      /*  return $this->articleService->getArticles(request: $request);*/
+        $minutes = config('cache.short_time')??30;
+        $locale = App::currentLocale();
+        $cacheKey =  'articlesLandingPage' . $locale;
+        return Cache::remember($cacheKey, $minutes, function () use($request) {
+            $articles =  $this->articleRepository->getAllArticles($request);
+            return $this->articleService->generateResponse($articles);
+        });
     }
 
     public function articlesArchiveCommon()
