@@ -2,6 +2,7 @@
 
 namespace TechStudio\Blog\app\Services\Article;
 
+use Illuminate\Support\Facades\Cache;
 use TechStudio\Blog\app\Models\Article;
 use Illuminate\Support\Facades\App;
 
@@ -164,6 +165,15 @@ class ArticleService
 
         $relatedModel = new Article();
         $article->increment('viewsCount');
+        $cacheKey = 'articleViewCount:'.$article->title;
+        $minute = config('cache.short_time')??30;
+        /* if (!Cache::has($cacheKey)){
+             \Log::info('nist');
+         }*/
+        $viewsCount = Cache::remember($cacheKey,$minute, function () use ($article) {
+            return $article->viewsCount;
+        });
+
         $user_id = null;
         if(auth()->check()){
             $user_id = auth()->id();
@@ -175,7 +185,7 @@ class ArticleService
             'likesCount' => $article->likes_count??0,
             'currentUserLiked' => $user_id && (bool)$article->isLikedBy($user_id),
             'currentUserBookmarked' => $user_id && (bool)$article->isSavedBy($user_id),
-            'viewsCount' => $article->viewsCount,
+            'viewsCount' => $viewsCount,
             'bannerUrl' => $article->bannerUrl,
             'content' => $article->content,
             'summary' => $article->getSummary(),
