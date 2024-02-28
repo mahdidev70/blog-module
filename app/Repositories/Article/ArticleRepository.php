@@ -45,7 +45,17 @@ class ArticleRepository implements ArticleRepositoryInterface
         $language = App::currentLocale();
         $articlesQuery = Article::query()->where('language', $language)->with(['tags']);
 
-        if ($request->filled('category')){
+        if ($request->filled('type')){
+            if ($request['type'] == 'podcast'){
+                $articlesQuery->where('type','podcast');
+            }else{
+                $articlesQuery->where('type','podcast');
+            }
+        }
+
+        //این قسمت از فرانت اینگونه میاد واسه همین این شرط ها لازمه
+        if ($request->has('category') && $request->category != 'null' && $request->category != 'undefined' && strlen($request->category) > 0){
+        /*if ($request->filled('category')){*/
             if ($request->category !== 'all'){
                 $articlesQuery->whereHas('category',function ($query) use($request){
                     $query->whereIn('slug', explode(',', $request->category));
@@ -53,8 +63,8 @@ class ArticleRepository implements ArticleRepositoryInterface
             }
         }
 
-        /*if ($request->has('tag') && $request->tag != 'null' && $request->tag != 'undefined' && strlen($request->tag) > 0){*/
-        if ($request->filled('tag')){
+        if ($request->has('tag') && $request->tag != 'null' && $request->tag != 'undefined' && strlen($request->tag) > 0){
+        /*if ($request->filled('tag')){*/
             $articlesQuery->whereHas('tags',function ($query) use($request){
                 $query->whereIn('slug', explode(',', $request->tag));
             });
