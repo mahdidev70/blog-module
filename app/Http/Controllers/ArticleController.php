@@ -53,10 +53,10 @@ class ArticleController extends Controller
     public function listArticles(Request $request)
     {
       /*  return $this->articleService->getArticles(request: $request);*/
-        $minutes = config('cache.short_time')??30;
+       /* $minutes = config('cache.short_time')??30;*/
         $locale = App::currentLocale();
         $cacheKey =  'articlesLandingPage' . $locale;
-        return Cache::remember($cacheKey, $minutes, function () use($request) {
+        return Cache::remember($cacheKey, 5, function () use($request) {
             $articles =  $this->articleRepository->getAllArticles($request);
             return $this->articleService->generateResponse($articles);
         });
