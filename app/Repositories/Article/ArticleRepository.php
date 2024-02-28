@@ -45,14 +45,6 @@ class ArticleRepository implements ArticleRepositoryInterface
         $language = App::currentLocale();
         $articlesQuery = Article::query()->where('language', $language)->with(['tags']);
 
-        if ($request->filled('type')){
-            if ($request['type'] == 'podcast'){
-                $articlesQuery->where('type','podcast');
-            }else{
-                $articlesQuery->where('type','podcast');
-            }
-        }
-
         //این قسمت از فرانت اینگونه میاد واسه همین این شرط ها لازمه
         if ($request->has('category') && $request->category != 'null' && $request->category != 'undefined' && strlen($request->category) > 0){
         /*if ($request->filled('category')){*/
