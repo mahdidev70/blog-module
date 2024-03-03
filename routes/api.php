@@ -22,7 +22,9 @@ use TechStudio\Core\app\Http\Controllers\SearchController;
 */
 
 Route::get('/search', [SearchController::class, 'search']);
-Route::get('/testAuth', [ArticleController::class, 'test']); //=> Done
+Route::middleware('auth:sanctum')->group(function () {
+Route::get('/testAuth', [ArticleController::class, 'test']);
+});
 
 // ============ CLIENT SIDE ===============
 Route::prefix('articles')->group(function () {
