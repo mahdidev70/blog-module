@@ -63,7 +63,8 @@ class ArticleController extends Controller
       /*  $locale = App::currentLocale();*/
         $page = $request->page;
         $category =  $request->category??'all';
-        $cacheKey =  'articlesLandingPage' . $page.' category:'.$category ;
+        $sort = $request->sort?? 'recent';
+        $cacheKey =  'articlesLandingPage' . $page.' category:'.$category.' sort:'.$sort;
         return Cache::remember($cacheKey, $minutes, function () use($request) {
             $articles =  $this->articleRepository->getAllArticles($request);
             return $this->articleService->generateResponse($articles);
