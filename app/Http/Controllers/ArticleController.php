@@ -233,7 +233,7 @@ class ArticleController extends Controller
         }
 
         if ($request->author) {
-            $author = UserProfile::where('id', $request->author['id'])->firstOrFail();
+            $author = UserProfile::where('user_id', $request->author['id'])->firstOrFail();
         } else {
             $author = Auth::user();
         }
