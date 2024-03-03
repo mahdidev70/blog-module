@@ -61,10 +61,8 @@ class ArticleController extends Controller
     {
         $minutes = config('cache.mid_time')??720;
       /*  $locale = App::currentLocale();*/
-        $page = $request->page;
-        $category =  $request->category??'all';
-        $sort = $request->sort?? 'recent';
-        $cacheKey =  'articlesLandingPage' . $page.' category:'.$category.' sort:'.$sort;
+        $encode = md5(json_encode($request->all()));
+        $cacheKey =  'articlesLandingPage_' . $encode;
         return Cache::remember($cacheKey, $minutes, function () use($request) {
             $articles =  $this->articleRepository->getAllArticles($request);
             return $this->articleService->generateResponse($articles);
