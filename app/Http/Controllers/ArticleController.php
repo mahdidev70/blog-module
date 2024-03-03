@@ -47,6 +47,7 @@ class ArticleController extends Controller
         if(auth()->check()){
             return auth()->user();
         }
+        return auth()->check().'';
     }
 
     public function getArticle($locale, $slug, Request $request)
