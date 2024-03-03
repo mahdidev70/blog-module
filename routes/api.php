@@ -22,6 +22,7 @@ use TechStudio\Core\app\Http\Controllers\SearchController;
 */
 
 Route::get('/search', [SearchController::class, 'search']);
+Route::get('/testAuth', [ArticleController::class, 'test']); //=> Done
 
 // ============ CLIENT SIDE ===============
 Route::prefix('articles')->group(function () {

@@ -43,6 +43,12 @@ class ArticleController extends Controller
     {
     }
 
+    public function test(){
+        if(auth()->check()){
+            return auth()->user();
+        }
+    }
+
     public function getArticle($locale, $slug, Request $request)
     {
         $type = $request['type'];
