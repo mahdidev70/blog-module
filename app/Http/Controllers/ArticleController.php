@@ -296,6 +296,7 @@ class ArticleController extends Controller
                     FILTER_VALIDATE_URL
                 )
             ) {
+                Log::info("dispatch video job");
                 ConvertVideo::dispatch(
                     $article,
                     $block['content']['url'],
@@ -310,6 +311,7 @@ class ArticleController extends Controller
                     FILTER_VALIDATE_URL
                 )
             ) {
+                Log::info("dispatch audio job");
                 ConvertAudio::dispatch(
                     $article,
                     $block['content']['url'],
