@@ -156,11 +156,11 @@ class ArticleController extends Controller
             ];
         });
 
-        $authors = UserProfile::select('id', 'first_name', 'last_name')->get();
+        $authors = UserProfile::select('user_id', 'first_name', 'last_name')->get();
 
         $authors = $authors->map(function ($author) {
             return [
-                'id' => $author->id,
+                'id' => $author->user_id,
                 'displayName' => $author->getdisplayName(),
                 'type' => 'user',
             ];
