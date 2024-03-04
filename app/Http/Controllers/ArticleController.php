@@ -299,8 +299,7 @@ class ArticleController extends Controller
                 ConvertVideo::dispatch(
                     $article,
                     $block['content']['url'],
-                    $article->title,
-                    'video'
+                    $article->title
                 );
             }
 
@@ -314,8 +313,7 @@ class ArticleController extends Controller
                 ConvertAudio::dispatch(
                     $article,
                     $block['content']['url'],
-                    $article->title,
-                    'audio'
+                    $article->title
                 );
             }
         }
