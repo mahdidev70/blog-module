@@ -5,6 +5,7 @@ namespace TechStudio\Blog\app\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Jobs\ConvertVideo;
 use App\Jobs\ConvertAudio;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use TechStudio\Blog\app\Repositories\Article\ArticleRepositoryInterface;
 use TechStudio\Core\app\Models\Category;
