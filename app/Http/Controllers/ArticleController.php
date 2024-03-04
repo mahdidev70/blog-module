@@ -409,7 +409,7 @@ class ArticleController extends Controller
                 'slug' => $article->slug,
                 'author' => [
                     'displayName' => $article->author->getDisplayName(),
-                    'id' => $article->author->id,
+                    'id' => $article->author->user_id,
                     'type' => $article->author_type,
                 ],
                 'category' =>  $article->category->slug ?? "",
