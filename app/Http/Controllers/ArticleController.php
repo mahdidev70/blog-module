@@ -197,7 +197,7 @@ class ArticleController extends Controller
         }
 
         return [
-            'id' => $article->user_id,
+            'id' => $article->id,
             'title' => $article->title,
             'slug' => $article->slug,
             'bannerUrl' => $article->bannerUrl,
