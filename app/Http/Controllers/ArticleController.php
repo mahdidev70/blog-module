@@ -481,22 +481,19 @@ class ArticleController extends Controller
         ]);
 
         $ids = collect($validatedData['ids']);
-
+        
         if ($validatedData['status'] == 'published') {
             $date = Carbon::now()->toDateTimeString();
             $articles = $article->whereIn('id', $ids)->where('language', $locale)->get();
-
             foreach ($articles as $article) {
-                $data = Validator::make($article->toArray(), $request->all(), [
+                Validator::make($article->toArray(), [
                     //to do AmirMahdi
                     'title' => 'required',
                     'slug' => 'required', //BEDON SPACE -- MAX CHAR = 80 -- add slug generator
                     'content' => 'required',
                     'bannerUrl' => 'required',
                     'category_id' => [
-                    'required_if:request.type,article',
-                    'integer',
-                ],
+                    'required_if:'.$article->type.', article', 'integer', 'nullable'],
                     'summary' => 'required',
                     'viewsCount' => 'integer',
                     'author_id' => 'required|integer',
