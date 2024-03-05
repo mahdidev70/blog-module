@@ -487,7 +487,7 @@ class ArticleController extends Controller
             $articles = $article->whereIn('id', $ids)->where('language', $locale)->get();
 
             foreach ($articles as $article) {
-                $data = Validator::make($article->toArray(), [
+                $data = Validator::make($article->toArray(), $request->all(), [
                     //to do AmirMahdi
                     'title' => 'required',
                     'slug' => 'required', //BEDON SPACE -- MAX CHAR = 80 -- add slug generator
