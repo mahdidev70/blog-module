@@ -175,8 +175,8 @@ class ArticleService
         });
 
         $user_id = null;
-        if(auth()->check()){
-            $user_id = auth()->id();
+        if (Auth('sanctum')->user()) {
+            $user_id = Auth('sanctum')->user()->id;
         }
 
         return [
