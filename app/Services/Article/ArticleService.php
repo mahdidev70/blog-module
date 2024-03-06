@@ -188,7 +188,7 @@ class ArticleService
             'viewsCount' => $viewsCount,
             'bannerUrl' => $article->bannerUrl,
             'content' => $article->content,
-            'summary' => $article->getSummary(),
+            'summary' => $article->summary,
             'relevantContentCards' => $this->getRelevantContentCards($article, $relatedModel),
             'tags' => $tags,
             'author' => $this->getAuthor($article->author),
