@@ -84,7 +84,6 @@ class Article extends Model
 
     public function getSummary()
     {
-        return '';
         if (is_null($this->summary)) {
             $this->updateSummary();
         }
