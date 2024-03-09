@@ -26,6 +26,8 @@ Route::middleware('api')->group(function () {
 Route::get('/testAuth', [ArticleController::class, 'test']);
 });
 
+Route::get('kns/article/sideBar', [ArticleController::class, 'knsSideBar']);
+
 // ============ CLIENT SIDE ===============
 Route::prefix('articles')->group(function () {
 
