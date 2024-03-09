@@ -42,8 +42,7 @@ class ArticleController extends Controller
 {
     public function __construct(protected ArticleService $articleService, protected CategoryService $categoryService,
                                 protected FileService $fileService, protected ArticleRepositoryInterface $articleRepository)
-    {
-    }
+    {}
 
     public function test(){
         if(auth()->check()){
@@ -101,7 +100,7 @@ class ArticleController extends Controller
 
         $currentUserAction = $request->action;
         $functionName = strtolower($request->action) . 'By';
-        $slug->$functionName(Auth::user()->id);
+        $slug->$functionName(auth()->user()->id);
 
         return [
             'feedback' => [
@@ -552,7 +551,7 @@ class ArticleController extends Controller
 
     public function getUserArticle($locale, Request $request)
     {
-        $user = Auth::user();
+        $user = auth()->user();
         $articleModle = new Article();
 
         if ($request['data'] == 'my') {
@@ -567,5 +566,18 @@ class ArticleController extends Controller
 
             return new ArticlesResource($articleBookmarks);
         }
+    }
+
+    public function knsSideBar() 
+    {
+        $data = Article::where('star', 1)->paginate(5);
+
+        return $data;
+    }
+
+    public function knsPosts(Request $request) 
+    {
+        $data = Article::where('author_id', $request->userId)->orderBy('id', 'DESC')->paginate(10);
+        return new ArticlesResource($data);
     }
 }

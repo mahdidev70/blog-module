@@ -29,6 +29,7 @@ class ArticleResource extends JsonResource
             "minutesToRead" => $this->minutesToRead(),
             "information" => $this->information,
             "status" => $this->status,
+            'creationDate' => $this->created_at,
         ];
     }
 }
