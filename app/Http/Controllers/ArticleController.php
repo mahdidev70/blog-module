@@ -557,12 +557,12 @@ class ArticleController extends Controller
 
         if ($request['data'] == 'my') {
 
-            $myArticles = Article::where('author_id', $user->id)->paginate(10);
+            $myArticles = Article::where('author_id', $user->id)->orderBy('id', 'DESC')->paginate(10);
             return new ArticlesResource($myArticles);
         } elseif ($request['data'] == 'bookmark') {
 
             $bookmarks = Bookmark::where('bookmarkable_type', get_class($articleModle))
-                ->where('user_id', $user->id)->pluck('bookmarkable_id');
+                ->where('user_id', $user->id)->orderBy('id', 'DESC')->pluck('bookmarkable_id');
             $articleBookmarks = Article::whereIn('id', $bookmarks)->paginate(10);
 
             return new ArticlesResource($articleBookmarks);
