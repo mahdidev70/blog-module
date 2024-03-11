@@ -3,6 +3,7 @@
 namespace TechStudio\Blog\app\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Store\AuthorResource;
 use App\Jobs\ConvertVideo;
 use App\Jobs\ConvertAudio;
 use Illuminate\Support\Facades\Log;
@@ -31,6 +32,7 @@ use TechStudio\Blog\app\Http\Requests\UploadImageFileRequest;
 use TechStudio\Blog\app\Http\Resources\ArticleResource;
 use TechStudio\Blog\app\Http\Resources\ArticleSideBarResource;
 use TechStudio\Blog\app\Http\Resources\ArticlesResource;
+use TechStudio\Blog\app\Http\Resources\AthorResource;
 use TechStudio\Core\app\Models\Bookmark;
 use TechStudio\Core\app\Models\Follow;
 
@@ -45,13 +47,6 @@ class ArticleController extends Controller
     public function __construct(protected ArticleService $articleService, protected CategoryService $categoryService,
                                 protected FileService $fileService, protected ArticleRepositoryInterface $articleRepository)
     {}
-
-    public function test(){
-        if(auth()->check()){
-            return auth()->user();
-        }
-        return auth()->check().'';
-    }
 
     public function getArticle($locale, $slug, Request $request)
     {
@@ -583,9 +578,13 @@ class ArticleController extends Controller
 
     public function knsSideBar(Request $request) 
     {
-        $data = Article::where('star', 1)->take(5)->get();
+        $articles = Article::where('star', 1)->take(5)->get();
+        $authors = UserProfile::withCount('articles')->orderByDesc('articles_count')->take(10)->get();
 
-        return ;
+        return[
+            'articles' => ArticleResource::collection($articles),
+            'popularAutnor' => AthorResource::collection($authors),
+        ];
     }
 
     public function knsPosts(Request $request) 
