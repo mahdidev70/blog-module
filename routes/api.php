@@ -26,8 +26,6 @@ Route::middleware('api')->group(function () {
 
 });
 
-Route::get('kns/article/sideBar', [ArticleController::class, 'knsSideBar']);
-
 // ============ CLIENT SIDE ===============
 Route::prefix('articles')->group(function () {
 
