@@ -80,8 +80,13 @@ class ArticleController extends Controller
 
     public function articlesArchiveCommon()
     {
+        $articles = Article::where('star', 1)->take(5)->get();
+        $authors = UserProfile::withCount('articles')->orderByDesc('articles_count')->take(10)->get();
+
         return [
             'categories' => $this->categoryService->getCategoriesForFilter(new Article()),
+            'articles' => ArticleResource::collection($articles),
+            'popularAuthor' => AthorResource::collection($authors),
         ];
     }
 
@@ -574,17 +579,6 @@ class ArticleController extends Controller
 
             return new ArticlesResource($articleBookmarks);
         }
-    }
-
-    public function knsSideBar(Request $request) 
-    {
-        $articles = Article::where('star', 1)->take(5)->get();
-        $authors = UserProfile::withCount('articles')->orderByDesc('articles_count')->take(10)->get();
-
-        return[
-            'articles' => ArticleResource::collection($articles),
-            'popularAutnor' => AthorResource::collection($authors),
-        ];
     }
 
     public function knsPosts(Request $request) 
