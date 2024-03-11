@@ -23,7 +23,7 @@ use TechStudio\Core\app\Http\Controllers\SearchController;
 
 Route::get('/search', [SearchController::class, 'search']);
 Route::middleware('api')->group(function () {
-Route::get('/testAuth', [ArticleController::class, 'test']);
+
 });
 
 Route::get('kns/article/sideBar', [ArticleController::class, 'knsSideBar']);
