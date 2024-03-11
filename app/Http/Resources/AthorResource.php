@@ -15,11 +15,12 @@ class AthorResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id' => $this->id,
+            'id' => $this->user_id,
             'type' => $this->getUserType(),
             'displayName' => $this->getDisplayName(),
             'avatarUrl' => $this->avatar_url,
-            'description' => $this->description
+            'description' => $this->description,
+            'isFollowed' => 1,
         ];
     }
 }
