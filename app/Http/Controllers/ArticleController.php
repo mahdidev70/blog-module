@@ -29,8 +29,10 @@ use Carbon\Carbon;
 use TechStudio\Blog\app\Http\Requests\UploadFileRequest;
 use TechStudio\Blog\app\Http\Requests\UploadImageFileRequest;
 use TechStudio\Blog\app\Http\Resources\ArticleResource;
+use TechStudio\Blog\app\Http\Resources\ArticleSideBarResource;
 use TechStudio\Blog\app\Http\Resources\ArticlesResource;
 use TechStudio\Core\app\Models\Bookmark;
+use TechStudio\Core\app\Models\Follow;
 
 // ===== not done : =====
 // use App\Models\Bookmark;
@@ -60,6 +62,17 @@ class ArticleController extends Controller
 
     public function listArticles(Request $request)
     {
+        if ($request->category == 'following') {
+
+            if (Auth('sanctum')->user()) {
+                $user_id = Auth('sanctum')->user()->id;
+            }
+        
+            $followingIds = Follow::where('follower_id', $user_id)->pluck('following_id');
+            $articles = Article::whereIn('author_id', $followingIds)->paginate(10);
+
+            return new ArticlesResource($articles);
+        }
         $minutes = config('cache.mid_time')??720;
       /*  $locale = App::currentLocale();*/
         $encode = md5(json_encode($request->all()));
@@ -568,11 +581,11 @@ class ArticleController extends Controller
         }
     }
 
-    public function knsSideBar() 
+    public function knsSideBar(Request $request) 
     {
-        $data = Article::where('star', 1)->paginate(5);
+        $data = Article::where('star', 1)->take(5)->get();
 
-        return $data;
+        return ;
     }
 
     public function knsPosts(Request $request) 
