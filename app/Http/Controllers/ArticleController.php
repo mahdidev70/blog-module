@@ -62,9 +62,11 @@ class ArticleController extends Controller
             if (Auth('sanctum')->user()) {
                 $user_id = Auth('sanctum')->user()->id;
             }
-        
+            $locale = App::currentLocale();
+
             $followingIds = Follow::where('follower_id', $user_id)->pluck('following_id');
-            $articles = Article::whereIn('author_id', $followingIds)->paginate(10);
+            $articles = Article::whereIn('author_id', $followingIds)
+                ->where('language', $locale)->paginate(10);
 
             return new ArticlesResource($articles);
         }
