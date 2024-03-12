@@ -4,6 +4,7 @@ namespace TechStudio\Blog\app\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use TechStudio\Core\app\Models\Follow;
 
 class AthorResource extends JsonResource
 {
