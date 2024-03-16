@@ -39,7 +39,8 @@ class BlogHomeController extends Controller
         $locale = App::currentLocale();
         $cacheKey =  'articlesLandingPageCommon-' . $locale;
         $result = Cache::remember($cacheKey, $minutes, function () {
-            $articles = Article::where('star', 1)->take(5)->get();
+            $locale = App::currentLocale();
+            $articles = Article::where('star', 1)->where('language', $locale)->take(5)->get();
             $authors = UserProfile::withCount('articles')->orderByDesc('articles_count')->take(10)->get();
             return [
                 'featuredArticles' => $this->articleService->getFeaturedArticles(),

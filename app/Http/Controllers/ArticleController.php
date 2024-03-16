@@ -581,7 +581,8 @@ class ArticleController extends Controller
 
     public function knsPosts(Request $request) 
     {
-        $data = Article::where('author_id', $request->userId)->orderBy('id', 'DESC')->paginate(10);
+        $locale = App::currentLocale();
+        $data = Article::where('author_id', $request->userId)->where('language', $locale)->orderBy('id', 'DESC')->paginate(10);
         return new ArticlesResource($data);
     }
 }
