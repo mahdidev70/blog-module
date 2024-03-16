@@ -19,13 +19,15 @@ use TechStudio\Core\app\Models\UserProfile;
 
 class ArticleService
 {
-    public function __construct(protected ArticleRepositoryInterface $articleRepository){}
+    public function __construct(protected ArticleRepositoryInterface $articleRepository)
+    {}
+    
     public function getAuthor(UserProfile $user)
     {
        return [
             "displayName" => $user->getDisplayName(),
             "avatarUrl" => $user->avatar_url,
-            "id" => $user->id,
+            "id" => $user->user_id,
         ];
     }
 
