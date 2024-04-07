@@ -10,10 +10,9 @@ use TechStudio\Blog\app\Services\Banner\BannerService;
 use TechStudio\Blog\app\Services\Article\ArticleService;
 use TechStudio\Blog\app\Models\Article;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\Store\ArticleResource;
-use App\Models\Podcast;
 use App\Services\Video\VideoService;
 use Illuminate\Http\Request;
+use TechStudio\Blog\app\Http\Resources\ArticleResource;
 use TechStudio\Blog\app\Http\Resources\AthorResource;
 use TechStudio\Core\app\Models\UserProfile;
 
