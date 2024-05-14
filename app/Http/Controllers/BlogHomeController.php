@@ -15,12 +15,17 @@ use Illuminate\Http\Request;
 use TechStudio\Blog\app\Http\Resources\ArticleResource;
 use TechStudio\Blog\app\Http\Resources\AthorResource;
 use TechStudio\Core\app\Models\UserProfile;
+use TechStudio\Core\app\Repositories\BannerRepository;
+use TechStudio\Core\app\Repositories\Interfaces\BannerRepositoryInterface;
 
 class BlogHomeController extends Controller
 {
-    public function __construct(protected ArticleService $articleService, protected CategoryService $categoryService
-                                ,protected BannerService $bannerService)
-    { }
+
+    public function __construct(protected ArticleService $articleService, protected CategoryService $categoryService,
+    protected BannerRepositoryInterface $bannerRepository)
+    { 
+        $this->bannerRepository = $bannerRepository;
+    }
     public function getHomepage() {
     //     /*$articles = $this->articleService->getFeaturedArticles();*/
        $result =  [
@@ -43,7 +48,7 @@ class BlogHomeController extends Controller
             $authors = UserProfile::withCount('articles')->orderByDesc('articles_count')->take(10)->get();
             return [
                 'featuredArticles' => $this->articleService->getFeaturedArticles(),
-                'quickActionBanners' => $this->bannerService->getBannerForHomPage(),
+                'quickActionBanners' => $this->bannerRepository->getBannerForHomPage(),
                 'categories' => $this->categoryService->getCategoriesForFilter(new Article()),
                 'recentPodcasts' => $this->articleService->getRecentPodcasts(),
                 'articleStar' => ArticleResource::collection($articles),
