@@ -64,13 +64,13 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
     // ============= PANEL SIDE ===============
-    Route::prefix('article_editor')->group(function () {
+    Route::prefix('article_editor')->middleware('can:create-article')->group(function () {
         Route::get('/data/{id}', [ArticleController::class, 'getEditorData']);
         Route::get('/common', [ArticleController::class, 'getEditorCommon']);
         Route::put('/data', [ArticleController::class, 'updateEditorData']);
     });
 
-    Route::prefix('panel/articles/')->group(function () {
+    Route::prefix('panel/articles/')->middleware('can:create-article')->group(function () {
         Route::post('/upload_cover', [ArticleController::class, 'uploadArticleCover']);
         Route::post('/inline_media', [ArticleController::class, 'uploadArticleContent']);
     });
