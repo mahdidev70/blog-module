@@ -334,31 +334,35 @@ class ArticleController extends Controller
         if (isset($request['final']) && $request['final'] == 1) {
             $date = Carbon::now()->toDateTimeString();
 
-            Validator::make($article->clone()->toArray(), [
+            Validator::make($article->toArray(), [
                 //to do AmirMahdi
                 'title' => 'required',
                 'slug' => 'required', //BEDON SPACE -- MAX CHAR = 80 -- add slug generator
                 'content' => 'required',
                 'bannerUrl' => 'required',
                 'category_id' => [
-                    'required_if:'.$article->type.', article', 'integer', 'nullable'],
+                    'required_if:' . $article->type . ', article', 'integer', 'nullable'],
                 'summary' => 'required',
                 'viewsCount' => 'integer',
                 'author_id' => 'required|integer',
             ])->validate();
-            // if (SlugGenerator::transform($article->slug) != $article->slug) {
-            //     throw new BadRequestException("اسلاگ حاوی کارکتر های نامناسب است.");
-            // }
+//             if (SlugGenerator::transform($article->slug) != $article->slug) {
+//                 throw new BadRequestException("اسلاگ حاوی کارکتر های نامناسب است.");
+//             }
+
+            $message = 'پست منتشر شد.';
 
             if (auth()->user()->can('publish-article')) {
                 $article->publicationDate = $date;
                 $article->status = 'published';
-            }
-            else {
-                $article->status = 'waiting-for-publish';
+            } else {
+                $message = 'پست در انتظار انتشار است.';
+                $article->status = 'draft';
             }
 
             $article->save();
+
+            return response()->json(["data" => [], "message" => $message], 200);;
         }
 
 
