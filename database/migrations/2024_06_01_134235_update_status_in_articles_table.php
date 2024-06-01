@@ -17,7 +17,8 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('blog_articles', function (Blueprint $table) {
-            $table->enum('status', ['published', 'draft', 'ready_to_publish', 'hidden', 'deleted'])->default('published')->change();
+            $table->drop('status');
+            $table->enum('status', ['published', 'draft', 'ready_to_publish', 'hidden', 'deleted'])->default('published')->after('category_id');
         });
     }
 
