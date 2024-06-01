@@ -102,7 +102,7 @@ class ArticleRepository implements ArticleRepositoryInterface
 
 
         $article->rejects()->create([
-            'author_id' => auth()->user()->id,
+            'reporter_id' => auth()->user()->id,
             'reason' => $parameters['reason'],
         ]);
 
