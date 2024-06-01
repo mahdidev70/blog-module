@@ -19,7 +19,7 @@ return new class extends Migration
         Schema::create('rejected_articles', function (Blueprint $table) {
             $table->id();
             $table->unsignedBigInteger('article_id');
-            $table->unsignedBigInteger('reporter');
+            $table->unsignedBigInteger('reporter_id');
             $table->text('reason')->nullable();
             $table->timestamps();
         });

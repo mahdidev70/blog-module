@@ -624,7 +624,7 @@ class ArticleController extends Controller
         return new ArticlesResource($data);
     }
 
-    public function reject(RejectRequest $request, Article $article)
+    public function reject(RejectRequest $request, $locale, Article $article)
     {
         $this->articleRepository->reject($request->validated(), $article);
 
