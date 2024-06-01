@@ -241,8 +241,9 @@ class ArticleController extends Controller
             $article = Article::where('id', $request->id)->where('language', $locale)->firstOrFail();
         } else {
             $article = new Article;
-            $article->status = 'draft';
         }
+
+        $article->status = 'draft';
 
         if ($request->author) {
             $author = UserProfile::where('user_id', $request->author['id'])->firstOrFail();
@@ -357,7 +358,7 @@ class ArticleController extends Controller
                 $article->status = 'published';
             } else {
                 $message = 'پست در انتظار تایید برای انتشار است.';
-                $article->status = 'draft';
+                $article->status = 'waiting_for_approve';
             }
 
             $article->save();
