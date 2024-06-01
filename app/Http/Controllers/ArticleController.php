@@ -356,13 +356,13 @@ class ArticleController extends Controller
                 $article->publicationDate = $date;
                 $article->status = 'published';
             } else {
-                $message = 'پست در انتظار انتشار است.';
+                $message = 'پست در انتظار تایید برای انتشار است.';
                 $article->status = 'draft';
             }
 
             $article->save();
 
-            return response()->json(["data" => [], "message" => $message], 200);;
+            return response()->json(["data" => [], "message" => $message], 200);
         }
 
 
