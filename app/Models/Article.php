@@ -95,7 +95,8 @@ class Article extends Model
         foreach ($this->content as $item) {
             if ($item['type'] == 'html') {
                 try{
-                    $this->summary = HtmlContent::autoGenerateSummary($item['content']) ?? "";
+                    $content = is_array($item['content']) ? $item['content']['model'] ?? [] : $item['content'];
+                    $this->summary = HtmlContent::autoGenerateSummary($content) ?? "";
                 }catch(Exception $e){
                     Log::error($this->id.' error in content '.$e);
                 }
