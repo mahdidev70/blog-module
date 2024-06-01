@@ -16,17 +16,17 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::table('blog_articles', function (Blueprint $table) {
-            $table->dropColumn('status');
-        });
-
-        Schema::table('blog_articles', function (Blueprint $table) {
-            $table->enum('status', ['published', 'draft', 'waiting_for_approve', 'hidden', 'deleted'])->default('published')->after('category_id');
+        Schema::create('rejected_articles', function (Blueprint $table) {
+            $table->id();
+            $table->unsignedBigInteger('article_id');
+            $table->unsignedBigInteger('reporter');
+            $table->text('reason')->nullable();
+            $table->timestamps();
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('blog_articles');
+        Schema::dropIfExists('rejected_articles');
     }
 };

@@ -2,6 +2,8 @@
 
 namespace TechStudio\Blog\app\Models;
 
+use App\Models\Profile;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use TechStudio\Core\app\Models\Category;
 use TechStudio\Core\app\Models\Comment;
 use TechStudio\Core\app\Models\Traits\taggeable;
@@ -131,5 +133,10 @@ class Article extends Model
         $article->summary = $oldArticle->summary;
 
         return $article;
+    }
+
+    public function rejects(): HasMany
+    {
+        return $this->hasMany(RejectedArticle::class, 'article_id', 'id');
     }
 }

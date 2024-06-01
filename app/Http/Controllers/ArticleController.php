@@ -8,6 +8,7 @@ use App\Jobs\ConvertVideo;
 use App\Jobs\ConvertAudio;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
+use TechStudio\Blog\app\Http\Requests\Article\RejectRequest;
 use TechStudio\Blog\app\Repositories\Article\ArticleRepositoryInterface;
 use TechStudio\Core\app\Models\Category;
 use TechStudio\Core\app\Models\Tag;
@@ -35,6 +36,7 @@ use TechStudio\Blog\app\Http\Resources\ArticlesResource;
 use TechStudio\Blog\app\Http\Resources\AthorResource;
 use TechStudio\Core\app\Models\Bookmark;
 use TechStudio\Core\app\Models\Follow;
+use Illuminate\Support\Facades\DB;
 
 // ===== not done : =====
 // use App\Models\Bookmark;
@@ -620,5 +622,12 @@ class ArticleController extends Controller
         $locale = App::currentLocale();
         $data = Article::where('author_id', $request->userId)->where('language', $locale)->orderBy('id', 'DESC')->paginate(10);
         return new ArticlesResource($data);
+    }
+
+    public function reject(RejectRequest $request, Article $article)
+    {
+        $this->articleRepository->reject($request->validated(), $article);
+
+        return response()->json(["data" => [], "message" => "عملیات با موفقیت انجام شد."], 200);
     }
 }

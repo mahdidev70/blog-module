@@ -3,12 +3,14 @@
 namespace TechStudio\Blog\app\Repositories\Article;
 
 use Illuminate\Support\Facades\App;
+use TechStudio\Blog\app\Http\Requests\Article\RejectRequest;
 use TechStudio\Blog\app\Models\Article;
 use TechStudio\Core\app\Models\Category;
+use Illuminate\Support\Facades\DB;
 
 class ArticleRepository implements ArticleRepositoryInterface
 {
-    protected $model= Article::class;
+    protected $model = Article::class;
 
     public function getCategoriesWithCourses($locale)
     {
@@ -89,5 +91,21 @@ class ArticleRepository implements ArticleRepositoryInterface
         }
 
         return $articlesQuery->paginate(12);
+    }
+
+    public function reject(array $parameters, Article $article): void
+    {
+        DB::beginTransaction();
+
+        $article->status = 'rejected';
+        $article->save();
+
+
+        $article->rejects()->create([
+            'author_id' => auth()->user()->id,
+            'reason' => $parameters['reason'],
+        ]);
+
+        DB::commit();
     }
 }
