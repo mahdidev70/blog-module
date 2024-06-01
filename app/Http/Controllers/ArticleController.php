@@ -521,7 +521,7 @@ class ArticleController extends Controller
     public function updateArticlesStatus($locale, Article $article, Request $request)
     {
         $validatedData = $request->validate([
-            'status' => 'required|in:published,hidden,deleted,draft',
+            'status' => 'required|in:published,waiting_for_approve,hidden,deleted,draft',
             'ids' => 'required|array',
         ]);
 
