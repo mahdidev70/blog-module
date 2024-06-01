@@ -21,7 +21,7 @@ return new class extends Migration
         });
 
         Schema::table('blog_articles', function (Blueprint $table) {
-            $table->enum('status', ['published', 'draft', 'ready_to_publish', 'hidden', 'deleted'])->default('published')->after('category_id');
+            $table->enum('status', ['published', 'draft', 'waiting_for_approve', 'hidden', 'deleted'])->default('published')->after('category_id');
         });
     }
 
