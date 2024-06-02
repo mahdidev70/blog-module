@@ -7,6 +7,7 @@ use TechStudio\Blog\app\Http\Requests\Article\RejectRequest;
 use TechStudio\Blog\app\Models\Article;
 use TechStudio\Core\app\Models\Category;
 use Illuminate\Support\Facades\DB;
+use TechStudio\Core\app\Services\SMS\KavenegarService;
 
 class ArticleRepository implements ArticleRepositoryInterface
 {
@@ -105,6 +106,15 @@ class ArticleRepository implements ArticleRepositoryInterface
             'reporter_id' => auth()->user()->id,
             'reason' => $parameters['reason'],
         ]);
+
+        if (isset($parameters['sendSMS']) and $parameters['sendSMS']) {
+            $smsService = new \TechStudio\Core\app\Services\SMS\KavenegarService();
+
+            $smsService->send(
+                $article->author()->username,
+                $parameters['reason']
+            );
+        }
 
         DB::commit();
     }

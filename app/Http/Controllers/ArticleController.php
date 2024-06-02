@@ -355,7 +355,7 @@ class ArticleController extends Controller
 
             $message = 'پست منتشر شد.';
 
-            if (auth()->user()->can('publish-article')) {
+            if (auth()->user()->can('blogs')) {
                 $article->publicationDate = $date;
                 $article->status = 'published';
             } else {
