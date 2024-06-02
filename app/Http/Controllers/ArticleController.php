@@ -626,6 +626,7 @@ class ArticleController extends Controller
 
     public function reject(RejectRequest $request, $locale, Article $article)
     {
+        var_dump(Article::query()->pluck('id')->toArray());die();
         $this->articleRepository->reject($request->validated(), $article);
 
         return response()->json(["data" => [], "message" => "عملیات با موفقیت انجام شد."], 200);
