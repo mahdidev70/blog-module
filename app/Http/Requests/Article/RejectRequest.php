@@ -9,7 +9,8 @@ class RejectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'reason' => ['required', 'string'],
+            'reason'  => ['required', 'string'],
+            'sendSMS' => ['required', 'boolean'],
         ];
     }
 }
