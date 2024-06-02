@@ -624,7 +624,7 @@ class ArticleController extends Controller
         return new ArticlesResource($data);
     }
 
-    public function reject(RejectRequest $request, $locale, Article $article)
+    public function reject(RejectRequest $request, $locale, $article)
     {
         var_dump(Article::query()->pluck('id')->toArray());die();
         $this->articleRepository->reject($request->validated(), $article);
