@@ -113,7 +113,7 @@ class ArticleRepository implements ArticleRepositoryInterface
             $smsService = new \TechStudio\Core\app\Services\SMS\KavenegarService();
 
             $smsService->send(
-                $article->author()->user->username,
+                $article->author->user->username,
                 $parameters['reason']
             );
         }
