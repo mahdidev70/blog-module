@@ -582,7 +582,7 @@ class ArticleController extends Controller
             $request,
             max_count: 500,
             max_size_mb: 1000,
-            types: ['jpg', 'jpeg', 'png', 'mp4', 'mkv'],
+            types: ['jpg', 'jpeg', 'png', 'mp4', 'mkv', 'pdf'],
             format_result_as_attachment: true,
             storage_key: 'blog',
         );
