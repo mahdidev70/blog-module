@@ -624,10 +624,9 @@ class ArticleController extends Controller
         return new ArticlesResource($data);
     }
 
-    public function reject(RejectRequest $request, $locale, $article)
+    public function reject(RejectRequest $request, $id)
     {
-        var_dump(Article::query()->pluck('id')->toArray());die();
-        $this->articleRepository->reject($request->validated(), $article);
+        $this->articleRepository->reject($request->validated(), $id);
 
         return response()->json(["data" => [], "message" => "عملیات با موفقیت انجام شد."], 200);
     }

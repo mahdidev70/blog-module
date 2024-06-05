@@ -94,9 +94,11 @@ class ArticleRepository implements ArticleRepositoryInterface
         return $articlesQuery->paginate(12);
     }
 
-    public function reject(array $parameters, $article): void
+    public function reject(array $parameters, $id): void
     {
         DB::beginTransaction();
+
+        $article = Article::query()->findOrFail($id);
 
         $article->status = 'rejected';
         $article->save();

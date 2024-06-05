@@ -68,7 +68,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/data/{id}', [ArticleController::class, 'getEditorData']);
         Route::get('/common', [ArticleController::class, 'getEditorCommon']);
         Route::put('/data', [ArticleController::class, 'updateEditorData']);
-        Route::put('/{article}/reject', [ArticleController::class, 'reject']);
+        Route::put('/{id}/reject', [ArticleController::class, 'reject']);
     });
 
     Route::prefix('panel/articles/')->middleware('can:create-article')->group(function () {
