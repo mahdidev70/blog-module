@@ -630,6 +630,6 @@ class ArticleController extends Controller
     {
         $article = $this->articleRepository->reject($request->validated(), $id);
 
-        return response()->json(["data" => new ArticlesResource($article), "message" => "عملیات با موفقیت انجام شد."], 200);
+        return response()->json(["data" => new ArticleResource($article), "message" => "عملیات با موفقیت انجام شد."], 200);
     }
 }
