@@ -10,5 +10,5 @@ interface ArticleRepositoryInterface
     public function getCategoriesWithCourses($locale) ;
     public function getArticleAuthors();
     public function getCommonCounts($userId);
-    public function reject(array $parameters, $id): void;
+    public function reject(array $parameters, $id): Article;
 }

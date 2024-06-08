@@ -94,7 +94,7 @@ class ArticleRepository implements ArticleRepositoryInterface
         return $articlesQuery->paginate(12);
     }
 
-    public function reject(array $parameters, $id): void
+    public function reject(array $parameters, $id): Article
     {
         DB::beginTransaction();
 
@@ -119,5 +119,7 @@ class ArticleRepository implements ArticleRepositoryInterface
         }
 
         DB::commit();
+
+        return $article->refresh();
     }
 }

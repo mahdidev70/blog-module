@@ -628,8 +628,8 @@ class ArticleController extends Controller
 
     public function reject(RejectRequest $request, $locale, $id)
     {
-        $this->articleRepository->reject($request->validated(), $id);
+        $article = $this->articleRepository->reject($request->validated(), $id);
 
-        return response()->json(["data" => [], "message" => "عملیات با موفقیت انجام شد."], 200);
+        return response()->json(["data" => new ArticlesResource($article), "message" => "عملیات با موفقیت انجام شد."], 200);
     }
 }
