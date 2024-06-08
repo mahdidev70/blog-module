@@ -486,6 +486,7 @@ class ArticleController extends Controller
             'draft' => $articleModel->where('status', 'draft')->count(),
             'hidden' => $articleModel->where('status', 'hidden')->count(),
             'deleted' => $articleModel->where('status', 'deleted')->count(),
+            'rejected' => $articleModel->where('status', 'rejected')->count(),
         ];
 
         $categories = $category->map(function ($category) {
@@ -514,7 +515,8 @@ class ArticleController extends Controller
                 'published',
                 'draft',
                 'hidden',
-                'deleted'
+                'deleted',
+                'rejected',
             ]
         ];
 
