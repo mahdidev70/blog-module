@@ -152,7 +152,7 @@ class ArticleService
         });
     }
 
-    public function getArticle($article)
+    public function getArticle($article, $locale)
     {
         // $article = $article->with('author')->firstOrFail();
 
@@ -191,7 +191,7 @@ class ArticleService
             'bannerUrl' => $article->bannerUrl,
             'content' => $article->content,
             'summary' => $article->getSummary(),
-            'relevantContentCards' => $this->getRelevantContentCards($article, $relatedModel),
+            'relevantContentCards' => $this->getRelevantContentCards($article, $relatedModel, $locale),
             'tags' => $tags,
             'author' => $this->getAuthor($article->author),
             "minutesToRead" => $article->minutesToRead(),
@@ -199,7 +199,7 @@ class ArticleService
         ];
     }
 
-    public function getRelevantContentCards($model, $relatedModel)
+    public function getRelevantContentCards($model, $relatedModel, $locale)
     {
         $relevantArticlesIds = null;
         $relevantArticles = [];
@@ -207,14 +207,14 @@ class ArticleService
         try {
             $response = Http::timeout(1)->get("http://recommendation:5600/" . $model->id)->json();
             $relevantArticlesIds = $response?$response["similar_articles"]:[];
-            $relevantArticles = $model::with('category')->orderByDesc('publicationDate')->whereIn('id', $relevantArticlesIds)->limit(3)->get();
+            $relevantArticles = $model::where('language', $locale)->with('category')->orderByDesc('publicationDate')->whereIn('id', $relevantArticlesIds)->limit(3)->get();
 
         } catch (\Exception $e) {
             \Log::warning('Recommendation system error. Reason: ' . $e);
         }
 
         if (count($relevantArticles) == 0) {
-            $relevantArticles = $model::with('category')->whereNot('id', $model->id)->inRandomOrder()->take(3)->get();
+            $relevantArticles = $model::where('language', $locale)->with('category')->whereNot('id', $model->id)->inRandomOrder()->take(3)->get();
         }
 
         return collect($relevantArticles)->map(fn ($a) => [

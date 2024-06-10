@@ -54,7 +54,7 @@ class ArticleController extends Controller
     {
         $type = $request['type'];
         $getArticle = Article::with('author')->where('slug', $slug)->where('language', $locale)->firstOrFail();
-        return $this->articleService->getArticle($getArticle, $type);
+        return $this->articleService->getArticle($getArticle, $locale, $type);
     }
 
     public function listArticles(Request $request)
