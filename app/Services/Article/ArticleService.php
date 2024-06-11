@@ -123,7 +123,7 @@ class ArticleService
                 'slug' => null,
             ];
             $tags = [];
-            if ( $article->category_id != 0 ){
+            if ($article->category_id != 0 && !is_null($article->category_id)){
                 $category = [
                     'title' => $article->category->title,
                     'slug' =>  $article->category->slug,
@@ -263,7 +263,7 @@ class ArticleService
             'slug' => null,
         ];
         $tags = [];
-        if ( $article->category_id != 0 ){
+        if ($article->category_id != 0 && !is_null($article->category_id)){
             $category = [
                 'title' => $article->category->title,
                 'slug' =>  $article->category->slug,
