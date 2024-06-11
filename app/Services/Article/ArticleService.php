@@ -125,8 +125,8 @@ class ArticleService
             $tags = [];
             if ($article->category_id != 0 && !is_null($article->category_id)){
                 $category = [
-                    'title' => $article->category->title,
-                    'slug' =>  $article->category->slug,
+                    'title' => $article->category?->title ?? 'دسته بندی نشده',
+                    'slug' =>  $article->category?->slug ?? null,
                 ];
             }
             $tags = $article->tags->map(fn ($tag) => [
@@ -265,8 +265,8 @@ class ArticleService
         $tags = [];
         if ($article->category_id != 0 && !is_null($article->category_id)){
             $category = [
-                'title' => $article->category->title,
-                'slug' =>  $article->category->slug,
+                'title' => $article->category?->title ?? 'دسته بندی نشده',
+                'slug' =>  $article->category?->slug ?? null,
             ];
         }
         $tags = $article->tags->map(fn ($tag) => [
