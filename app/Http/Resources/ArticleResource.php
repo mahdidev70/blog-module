@@ -30,6 +30,8 @@ class ArticleResource extends JsonResource
             "information" => $this->information,
             "status" => $this->status,
             'creationDate' => $this->created_at,
+            'category_id' => $this->category_id,
+            'author_id' => $this->author_id,
         ];
     }
 }
