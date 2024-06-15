@@ -38,7 +38,7 @@ class ArticleService
         return Article::where('language', $language)
             ->where('type','article')
             ->select(['slug', 'title', 'bannerUrl', 'publicationDate', 'summary', 'author_id', 'category_id'])
-            ->with(['author:user_id,first_name,last_name,avatar_url', 'category:id,title,slug,'])
+            ->with(['author:user_id,first_name,last_name,avatar_url', 'category:id,title,slug'])
             ->orderBy('publicationDate', 'DESC')
             ->take(4)
             ->get()
