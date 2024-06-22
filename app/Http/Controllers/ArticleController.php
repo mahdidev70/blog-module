@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Store\AuthorResource;
 use App\Jobs\ConvertVideo;
 use App\Jobs\ConvertAudio;
+use Cassandra\Exception\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use TechStudio\Blog\app\Http\Requests\Article\RejectRequest;
@@ -304,6 +305,10 @@ class ArticleController extends Controller
         $article->save();
 
         foreach ($request['content'] as $i => $block) {
+            if (!str_starts_with($block['content']['url'], env('FILE_PREFIX', 'https://storage-demo-seller-hub.digikala.com'))) {
+                throw ValidationException::withMessages(['url' => 'The url must started with write file prefix.']);
+            }
+
             if (
                 $block['type'] == 'vid' &&
                 !filter_var(

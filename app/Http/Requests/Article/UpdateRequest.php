@@ -26,7 +26,7 @@ class UpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-             'content.*.url' => ['string', new FilePrefix()],
+//             'content.*.url' => ['string', new FilePrefix()],
         ];
     }
 }
