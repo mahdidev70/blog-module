@@ -9,6 +9,7 @@ use App\Jobs\ConvertAudio;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
 use TechStudio\Blog\app\Http\Requests\Article\RejectRequest;
+use TechStudio\Blog\app\Http\Requests\Article\UpdateRequest;
 use TechStudio\Blog\app\Repositories\Article\ArticleRepositoryInterface;
 use TechStudio\Core\app\Models\Category;
 use TechStudio\Core\app\Models\Tag;
@@ -237,7 +238,7 @@ class ArticleController extends Controller
     }
 
 
-    public function updateEditorData($locale, Request $request)
+    public function updateEditorData($locale, UpdateRequest $request)
     {
         if ($request['id']) {
             $article = Article::where('id', $request->id)->where('language', $locale)->firstOrFail();
