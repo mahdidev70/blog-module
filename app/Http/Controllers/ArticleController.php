@@ -193,6 +193,11 @@ class ArticleController extends Controller
     {
         $article = Article::with('tags', 'author')->where('id', $id)->where('language', $locale)->firstOrFail();
 
+        $user = auth()->user();
+        if (! $user->can('blogs') && $article->author_id != $user->id) {
+            abort(403, 'Access denied');
+        }
+
         $userModel = new UserProfile();
 
         if ($article->author_type == get_class($userModel)) {
