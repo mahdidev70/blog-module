@@ -14,7 +14,7 @@ class FilePrefix implements Rule
      *
      * @return bool
      */
-    public function passes($attribute, $value): bool
+    public function passes($attribute, $value)
     {
         return str_starts_with($value, env('FILE_PREFIX', 'https://storage-demo-seller-hub.digikala.com'));
     }
