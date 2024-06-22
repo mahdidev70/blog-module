@@ -5,12 +5,11 @@ namespace TechStudio\Blog\app\Services\Article;
 use Illuminate\Support\Facades\Cache;
 use TechStudio\Blog\app\Models\Article;
 use Illuminate\Support\Facades\App;
-
-
 use App\Models\Section;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Http\Client\ConnectionException;
+use TechStudio\Blog\app\Http\Resources\ArticleResource;
 use TechStudio\Blog\app\Repositories\Article\ArticleRepositoryInterface;
 use TechStudio\Core\app\Models\Category;
 use TechStudio\Core\app\Models\UserProfile;
@@ -35,23 +34,21 @@ class ArticleService
     {
         $language = App::currentLocale();
 
-        return Article::where('language', $language)
+        $articles = Article::where('language', $language)
             ->where('type','article')
-            ->select(['slug', 'title', 'bannerUrl', 'publicationDate', 'summary', 'author_id'])
-            ->with('author:user_id,first_name,last_name,avatar_url')
+            ->with(['author:user_id,first_name,last_name,avatar_url', 'category:id,title,slug'])
             ->orderBy('publicationDate', 'DESC')
             ->take(4)
-            ->get()
-            ->map(function ($article) {
-                $article->author->displayName = $this->getAuthor($article->author)['displayName'];
-                return $article;
-        });
+            ->get();
+
+        return ArticleResource::collection($articles);
     }
 
     public function getRecentPodcasts()
     {
         return Article::where('type', 'podcast')
             ->select(['slug', 'title', 'bannerUrl', 'publicationDate', 'summary','author_id'])
+            ->with(['author:user_id,first_name,last_name,avatar_url', 'category:id,title,slug'])
             ->orderBy('publicationDate', 'DESC')
             ->take(15)
             ->get()
