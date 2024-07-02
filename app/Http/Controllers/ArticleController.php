@@ -310,9 +310,9 @@ class ArticleController extends Controller
         $article->save();
 
         foreach ($request['content'] as $i => $block) {
-            if (isset($block['content']['url']) && !str_starts_with($block['content']['url'], env('FILE_PREFIX', 'https://storage-demo-seller-hub.digikala.com'))) {
-                throw ValidationException::withMessages(['url' => 'The url must started with write file prefix.']);
-            }
+            // if (isset($block['content']['url']) && !str_starts_with($block['content']['url'], env('FILE_PREFIX', 'https://storage-demo-seller-hub.digikala.com'))) {
+            //     throw ValidationException::withMessages(['url' => 'The url must started with write file prefix.']);
+            // }
 
             if (
                 $block['type'] == 'vid' &&
