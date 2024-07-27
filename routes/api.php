@@ -71,7 +71,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}/reject', [ArticleController::class, 'reject']);
     });
 
-    Route::prefix('panel/articles/')->middleware('can:create-article')->group(function () {
+    Route::prefix('panel/articles/')->group(function () {
         Route::post('/upload_cover', [ArticleController::class, 'uploadArticleCover']);
         Route::post('/inline_media', [ArticleController::class, 'uploadArticleContent']);
     });

@@ -193,6 +193,11 @@ class ArticleController extends Controller
     {
         $article = Article::with('tags', 'author')->where('id', $id)->where('language', $locale)->firstOrFail();
 
+        $user = auth()->user();
+        if (! $user->can('blogs') && $article->author_id != $user->id) {
+            abort(403, 'Access denied');
+        }
+
         $userModel = new UserProfile();
 
         if ($article->author_type == get_class($userModel)) {
@@ -305,9 +310,9 @@ class ArticleController extends Controller
         $article->save();
 
         foreach ($request['content'] as $i => $block) {
-            if (isset($block['content']['url']) && !str_starts_with($block['content']['url'], env('FILE_PREFIX', 'https://storage-demo-seller-hub.digikala.com'))) {
-                throw ValidationException::withMessages(['url' => 'The url must started with write file prefix.']);
-            }
+            // if (isset($block['content']['url']) && !str_starts_with($block['content']['url'], env('FILE_PREFIX', 'https://storage-demo-seller-hub.digikala.com'))) {
+            //     throw ValidationException::withMessages(['url' => 'The url must started with write file prefix.']);
+            // }
 
             if (
                 $block['type'] == 'vid' &&
@@ -579,7 +584,7 @@ class ArticleController extends Controller
             $request,
             max_count: 1,
             max_size_mb: 2,
-            types: ['jpg', 'jpeg', 'png'],
+            types: ['jpg', 'jpeg', 'png', 'mp4', 'mkv', 'pdf', 'webp'],
             format_result_as_attachment: false,
             storage_key: 'blog',
         );
@@ -592,7 +597,7 @@ class ArticleController extends Controller
             $request,
             max_count: 500,
             max_size_mb: 1000,
-            types: ['jpg', 'jpeg', 'png', 'mp4', 'mkv', 'pdf'],
+            types: ['jpg', 'jpeg', 'png', 'mp4', 'mkv', 'pdf', 'webp'],
             format_result_as_attachment: true,
             storage_key: 'blog',
         );
