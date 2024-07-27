@@ -11,6 +11,7 @@ use TechStudio\Core\app\Helper\PageContent;
 use TechStudio\Core\app\Helper\HtmlContent;
 use TechStudio\Core\app\Models\Traits\Bookmarkable;
 use TechStudio\Core\app\Models\Traits\Likeable;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 use Exception;
 use Laravel\Scout\Searchable;
@@ -24,7 +25,7 @@ use TechStudio\Core\app\Models\UserProfile;
 
 class Article extends Model
 {
-    use HasFactory, Bookmarkable, Likeable, taggeable;
+    use HasFactory, Bookmarkable, Likeable, taggeable, SoftDeletes;
 
     protected $table = 'blog_articles';
 

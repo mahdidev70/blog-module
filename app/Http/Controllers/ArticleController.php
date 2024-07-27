@@ -537,7 +537,7 @@ class ArticleController extends Controller
         ]);
 
         $ids = collect($validatedData['ids']);
-        
+
         if ($validatedData['status'] == 'published') {
             $date = Carbon::now()->toDateTimeString();
             $articles = $article->whereIn('id', $ids)->where('language', $locale)->get();
@@ -562,6 +562,8 @@ class ArticleController extends Controller
                     'publicationDate' => $date,
                 ]);
             }
+        } if ($validatedData['status'] == 'deleted') {
+            $article->delete();
         } else {
             $article->whereIn('id', $ids)->update(['status' => $validatedData['status']]);
         }
@@ -625,7 +627,7 @@ class ArticleController extends Controller
         }
     }
 
-    public function knsPosts(Request $request) 
+    public function knsPosts(Request $request)
     {
         $locale = App::currentLocale();
         $data = Article::where('author_id', $request->userId)->where('language', $locale)->orderBy('id', 'DESC')->paginate(10);
