@@ -534,47 +534,52 @@ class ArticleController extends Controller
         return $data;
     }
 
-    public function updateArticlesStatus($locale, Article $article, Request $request)
+
+    public function updateArticlesStatus($locale, Request $request)
     {
         $validatedData = $request->validate([
-            'status' => 'required|in:published,waiting_for_approve,hidden,deleted,draft',
-            'ids' => 'required|array',
+                'status' => 'required|in:published,waiting_for_approve,hidden,deleted,draft',
+                'ids' => 'required|array',
         ]);
 
         $ids = collect($validatedData['ids']);
 
+        $articles = Article::query()->whereIn('id', $ids)->where('language', $locale)->get();
+
         if ($validatedData['status'] == 'published') {
             $date = Carbon::now()->toDateTimeString();
-            $articles = $article->whereIn('id', $ids)->where('language', $locale)->get();
             foreach ($articles as $article) {
                 Validator::make($article->toArray(), [
                     //to do AmirMahdi
-                    'title' => 'required',
-                    'slug' => 'required', //BEDON SPACE -- MAX CHAR = 80 -- add slug generator
-                    'content' => 'required',
-                    'bannerUrl' => 'required',
-                    'category_id' => [
-                    'required_if:'.$article->type.', article', 'integer', 'nullable'],
-                    'summary' => 'required',
-                    'viewsCount' => 'integer',
-                    'author_id' => 'required|integer',
+                        'title' => 'required',
+                        'slug' => 'required', //BEDON SPACE -- MAX CHAR = 80 -- add slug generator
+                        'content' => 'required',
+                        'bannerUrl' => 'required',
+                        'category_id' => [
+                                'required_if:'.$article->type.', article', 'integer', 'nullable'],
+                        'summary' => 'required',
+                        'viewsCount' => 'integer',
+                        'author_id' => 'required|integer',
                 ])->validate();
                 // if (SlugGenerator::transform($article->slug) != $article->slug) {
                 //     throw new BadRequestException("اسلاگ حاوی کارکتر های نامناسب است.");
                 // }
-                $article->whereIn('id', $ids)->update([
+            }
+
+            Article::query()->whereIn('id', $ids)->update([
                     'status' => 'published',
                     'publicationDate' => $date,
-                ]);
-            }
+            ]);
         } if ($validatedData['status'] == 'deleted') {
-            $article->delete();
-        } else {
-            $article->whereIn('id', $ids)->update(['status' => $validatedData['status']]);
-        }
+             foreach ($articles as $article) {
+                 $article->delete();
+             }
+         } else {
+             Article::query()->whereIn('id', $ids)->update(['status' => $validatedData['status']]);
+         }
 
         return [
-            'updatedArticles' => $ids,
+                'updatedArticles' => $ids,
         ];
     }
 
