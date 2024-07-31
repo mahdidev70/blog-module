@@ -6,9 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\Store\AuthorResource;
 use App\Jobs\ConvertVideo;
 use App\Jobs\ConvertAudio;
+use Cassandra\Exception\ValidationException;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Cache;
-use Illuminate\Validation\ValidationException;
 use TechStudio\Blog\app\Http\Requests\Article\RejectRequest;
 use TechStudio\Blog\app\Http\Requests\Article\UpdateRequest;
 use TechStudio\Blog\app\Repositories\Article\ArticleRepositoryInterface;
@@ -265,9 +265,11 @@ class ArticleController extends Controller
         if (!$article->slug) {
             $article->slug = SlugGenerator::transform(($request['title']));
         } else {
-            Validator::make($article->toArray(), [
-                'slug' => 'unique:blog_articles,slug,'.$article->id,
-            ])->validate();
+            $invalid = Article::query()->where('slug', $article->slug)->exists();
+
+            if ($invalid) {
+                throw ValidationException::withMessages(['slug' => 'اسلاگ قبلا انتخاب شده است.']);
+            }
 
             $article->slug = $request['slug'];
         }
