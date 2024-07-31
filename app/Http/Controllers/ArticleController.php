@@ -265,7 +265,16 @@ class ArticleController extends Controller
         if (!$article->slug) {
             $article->slug = SlugGenerator::transform(($request['title']));
         } else {
+            Validator::make($article->toArray(), [
+                'slug' => 'unique:articles,slug',
+            ])->validate();
+
             $article->slug = $request['slug'];
+        }
+
+        $invalid = Article::query()->where('slug', $article->slug)->exists();
+        if ($invalid) {
+            $article->slug = SlugGenerator::unique($article->slug);
         }
 
         $article->bannerUrl = $request['bannerUrl'];
