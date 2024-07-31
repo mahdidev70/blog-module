@@ -266,7 +266,7 @@ class ArticleController extends Controller
             $article->slug = SlugGenerator::transform(($request['title']));
         } else {
             Validator::make($article->toArray(), [
-                'slug' => 'unique:blog_articles,slug',
+                'slug' => 'unique:blog_articles,slug,'.$article->id,
             ])->validate();
 
             $article->slug = $request['slug'];
