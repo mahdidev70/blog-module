@@ -262,10 +262,16 @@ class ArticleController extends Controller
         $article->author()->associate($author);
 
         $article->title = $request['title'];
+
         if (!$article->slug) {
             $article->slug = SlugGenerator::transform(($request['title']));
         } else {
-            $invalid = Article::query()->where('slug', $article->slug)->exists();
+            $invalid = Article::query()
+                    ->when($article->id, function ($query, $article_id) {
+                        $query->where('id', '!=', $article_id);
+                    })
+                    ->where('slug', $article->slug)
+                    ->exists();
 
             if ($invalid) {
                 throw ValidationException::withMessages(['slug' => 'اسلاگ قبلا انتخاب شده است.']);
@@ -274,7 +280,13 @@ class ArticleController extends Controller
             $article->slug = $request['slug'];
         }
 
-        $invalid = Article::query()->where('slug', $article->slug)->exists();
+        $invalid = Article::query()
+                ->when($article->id, function ($query, $article_id) {
+                    $query->where('id', '!=', $article_id);
+                })
+                ->where('slug', $article->slug)
+                ->exists();
+
         if ($invalid) {
             $article->slug = SlugGenerator::unique($article->slug);
         }
