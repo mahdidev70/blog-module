@@ -170,11 +170,9 @@ class ArticleService
 
         $views = Cache::get($cacheKey);
 
-        Log::error($views);
+        Log::error($views) ?? [];
 
         Cache::remember($cacheKey,$minute, function () use ($views) {
-            if (!count($views)) $views = [];
-
             return $views[request()->getClientIp()] = true;
         });
 
