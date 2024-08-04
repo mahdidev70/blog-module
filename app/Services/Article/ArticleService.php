@@ -168,13 +168,13 @@ class ArticleService
         $cacheKey = 'articleViewCount:'.$article->slug;
         $minute = config('cache.short_time')??30;
 
-        $views = Cache::get($cacheKey) ?? [];
-        $views[request()->getClientIp()] = isset($views[request()->getClientIp()]) ? $views[request()->getClientIp()]++ : 1;
+//        $views = Cache::get($cacheKey) ?? [];
+//        $views[request()->getClientIp()] = isset($views[request()->getClientIp()]) ? $views[request()->getClientIp()]++ : 1;
 
-        Log::error($views); die();
+//        Log::error($views); die();
 //        var_dump(request()->getClientIp()); die();
 
-        Cache::put($cacheKey, $views);
+//        Cache::put($cacheKey, $views);
 
         $user_id = null;
         if (Auth('sanctum')->user()) {
