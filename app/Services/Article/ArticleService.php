@@ -13,6 +13,7 @@ use TechStudio\Blog\app\Http\Resources\ArticleResource;
 use TechStudio\Blog\app\Repositories\Article\ArticleRepositoryInterface;
 use TechStudio\Core\app\Models\Category;
 use TechStudio\Core\app\Models\UserProfile;
+use Illuminate\Support\Facades\Log;
 
 // TODO: Needs cleanup/refactor
 
@@ -163,14 +164,18 @@ class ArticleService
         }
 
         $relatedModel = new Article();
-        $article->increment('viewsCount');
+
         $cacheKey = 'articleViewCount:'.$article->title;
         $minute = config('cache.short_time')??30;
-        /* if (!Cache::has($cacheKey)){
-             \Log::info('nist');
-         }*/
-        $viewsCount = Cache::remember($cacheKey,$minute, function () use ($article) {
-            return $article->viewsCount;
+
+        $views = Cache::get($cacheKey);
+
+        Log::error($views);
+
+        Cache::remember($cacheKey,$minute, function () use ($views) {
+            if (!count($views)) $views = [];
+
+            return $views[request()->getClientIp()] = true;
         });
 
         $user_id = null;
@@ -184,7 +189,7 @@ class ArticleService
             'likesCount' => $article->likes_count??0,
             'currentUserLiked' => $user_id && (bool)$article->isLikedBy($user_id),
             'currentUserBookmarked' => $user_id && (bool)$article->isSavedBy($user_id),
-            'viewsCount' => $viewsCount,
+            'viewsCount' => $article->viewsCount,
             'bannerUrl' => $article->bannerUrl,
             'content' => $article->content,
             'summary' => $article->getSummary(),
