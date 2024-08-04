@@ -31,11 +31,13 @@ class UpdateBlogViewsCount extends Command
         $articles = Article::query()->get();
 
         foreach ($articles as $article) {
-            $cacheKey = 'articleViewCount'.$article->slug;
+            $cacheKey = 'articleViewCount:'.$article->slug;
 
             $views = Cache::get($cacheKey) ?? [];
 
             $article->increment('viewsCount', count($views));
+
+            Cache::forget($cacheKey);
         }
 
     }
