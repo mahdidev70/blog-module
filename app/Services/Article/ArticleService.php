@@ -171,7 +171,7 @@ class ArticleService
         $views = Cache::get($cacheKey) ?? [];
         $views[request()->getClientIp()] = isset($views[request()->getClientIp()]) ? $views[request()->getClientIp()]++ : 1;
 
-//        var_dump($views); die();
+        Log::error($views); die();
 //        var_dump(request()->getClientIp()); die();
 
         Cache::put($cacheKey, $views);
