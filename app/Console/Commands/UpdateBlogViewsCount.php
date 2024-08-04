@@ -4,6 +4,7 @@ namespace TechStudio\Blog\app\Console\Commands;
 
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Cache;
+use TechStudio\Blog\app\Models\Article;
 
 
 class UpdateBlogViewsCount extends Command
