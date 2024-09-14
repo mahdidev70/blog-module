@@ -183,6 +183,7 @@ class ArticleService
 
         return [
             'title' => $article->title,
+            'seoTitle' => $article->seoTitle,
             'publicationDate' => $article->publicationDate,
             'likesCount' => $article->likes_count??0,
             'currentUserLiked' => $user_id && (bool)$article->isLikedBy($user_id),
