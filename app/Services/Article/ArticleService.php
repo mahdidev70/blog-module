@@ -135,6 +135,7 @@ class ArticleService
             return [
                 "art" => $article->id,
                 'title' =>$article->title,
+                'seoTitle' => $article->seoTitle,
                 'slug' =>$article->slug,
                 'bannerUrl' =>$article->bannerUrl,
                 'publicationDate' =>$article->publicationDate,
