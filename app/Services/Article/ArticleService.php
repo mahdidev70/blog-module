@@ -206,7 +206,7 @@ class ArticleService
         $relevantArticles = [];
 
         try {
-            $response = Http::timeout(1)->get("http://recommendation:5600/" . $model->id)->json();
+            $response = Http::timeout(1)->get("http://recommendation-active/" . $model->id)->json();
             $relevantArticlesIds = $response?$response["similar_articles"]:[];
             $relevantArticles = $model::where('language', $locale)->with('category')->orderByDesc('publicationDate')->whereIn('id', $relevantArticlesIds)->limit(3)->get();
 
